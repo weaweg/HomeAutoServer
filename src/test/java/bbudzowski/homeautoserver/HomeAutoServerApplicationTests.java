@@ -1,4 +1,4 @@
-package com.bbudzowski.homeautoserver;
+package bbudzowski.homeautoserver;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

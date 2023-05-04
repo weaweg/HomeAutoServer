@@ -1,4 +1,4 @@
-package com.bbudzowski.homeautoserver;
+package bbudzowski.homeautoserver;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
