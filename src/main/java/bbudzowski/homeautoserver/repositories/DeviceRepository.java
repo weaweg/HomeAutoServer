@@ -44,19 +44,28 @@ public class DeviceRepository {
             dv.id = rs.getString("id");
             dv.name = rs.getString("name");
             dv.location = rs.getString("location");
+            dv.sensor_nb = rs.getInt("sensor_nb");
             return dv;
         } catch (SQLException e) {
             return null;
         }
     }
 
-    public int addDevice(Device dv) {
-        String update = String.format("INSERT INTO devices VALUES (%s, %s, %s)", dv.id, dv.name, dv.location);
+    public Integer addDevice(Device dv) {
+        String update = String.format("INSERT INTO devices VALUES ('%s', '%s', '%s', '%s')", dv.id, dv.name, dv.location, dv.sensor_nb);
         try (Statement stmt = con.createStatement()) {
             return stmt.executeUpdate(update);
         } catch (SQLException e) {
-            return -1;
+            return null;
         }
+    }
 
+    public Integer removeDevice(String id) {
+        String update = String.format("DELETE FROM devices WHERE id = '%s'", id);
+        try (Statement stmt = con.createStatement()) {
+            return stmt.executeUpdate(update);
+        } catch (SQLException e) {
+            return null;
+        }
     }
 }
