@@ -6,21 +6,22 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.SQLException;
-import java.util.List;
-
 @RestController
 @RequestMapping("/devices")
 public class DeviceController {
-    private final DeviceRepository deviceRepository;
+    private final DeviceRepository devRepo;
 
-    public DeviceController() throws SQLException {
-        deviceRepository = new DeviceRepository();
+    public DeviceController() {
+        devRepo = new DeviceRepository();
     }
 
     @GetMapping()
-    public ResponseEntity<?> getDevice(@RequestParam(required = false) Integer id) {
-        List<Device> devices = deviceRepository.getAllDevices();
+    public ResponseEntity<?> getDevice(@RequestParam(required = false) String id) {
+        Object devices;
+        if (id != null)
+            devices = devRepo.getDevice(id);
+        else
+            devices = devRepo.getAllDevices();
         if (devices == null)
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 
@@ -29,14 +30,14 @@ public class DeviceController {
 
     @PutMapping("/local/add")
     public ResponseEntity<?> addDevice(@RequestBody Device dv) {
-        if(deviceRepository.addDevice(dv) == null)
+        if (devRepo.addDevice(dv) == null)
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @DeleteMapping("/local/delete")
     public ResponseEntity<?> removeDevice(@RequestParam String id) {
-        if(deviceRepository.removeDevice(id) == null)
+        if (devRepo.removeDevice(id) == null)
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         return new ResponseEntity<>(HttpStatus.OK);
     }

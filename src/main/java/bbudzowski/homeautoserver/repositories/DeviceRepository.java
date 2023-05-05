@@ -1,71 +1,55 @@
 package bbudzowski.homeautoserver.repositories;
-
+import bbudzowski.homeautoserver.RepositoryConnection;
 import bbudzowski.homeautoserver.tables.Device;
 
-import java.sql.*;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class DeviceRepository {
-    private static final String url = "jdbc:mariadb://localhost:3306/home_auto";
-    private static final String user = "root";
-    private static final String password = "";
-    private final Connection con;
+    private final RepositoryConnection db = new RepositoryConnection();
 
-    public DeviceRepository() throws SQLException {
-        con = DriverManager.getConnection(url, user, password);
+    private Device returnDevice(ResultSet rs) throws SQLException {
+        Device device = new Device();
+        device.id = rs.getString("id");
+        device.name = rs.getString("name");
+        device.location = rs.getString("location");
+        return device;
     }
 
     public List<Device> getAllDevices() {
         String query = "SELECT * FROM devices";
-        try (Statement stmt = con.createStatement()) {
-            ResultSet rs = stmt.executeQuery(query);
+        ResultSet rs = db.selectQuery(query);
+        try  {
             List<Device> results = new ArrayList<>();
-            while (rs.next()) {
-                Device dv = new Device();
-                dv.id = rs.getString("id");
-                dv.name = rs.getString("name");
-                dv.location = rs.getString("location");
-                results.add(dv);
-            }
+            while (rs.next())
+                results.add(returnDevice(rs));
             return results;
         } catch (SQLException e) {
             return null;
         }
     }
 
-    public Device getDevice(int id) {
-        String query = "SELECT * FROM devices WHERE id = " + id;
-        try (Statement stmt = con.createStatement()) {
-            ResultSet rs = stmt.executeQuery(query);
+    public Device getDevice(String id) {
+        String query = String.format("SELECT * FROM devices WHERE id = '%s'", id);
+        ResultSet rs = db.selectQuery(query);
+        try {
             rs.next();
-
-            Device dv = new Device();
-            dv.id = rs.getString("id");
-            dv.name = rs.getString("name");
-            dv.location = rs.getString("location");
-            dv.sensor_nb = rs.getInt("sensor_nb");
-            return dv;
+            return returnDevice(rs);
         } catch (SQLException e) {
             return null;
         }
     }
 
-    public Integer addDevice(Device dv) {
-        String update = String.format("INSERT INTO devices VALUES ('%s', '%s', '%s', '%s')", dv.id, dv.name, dv.location, dv.sensor_nb);
-        try (Statement stmt = con.createStatement()) {
-            return stmt.executeUpdate(update);
-        } catch (SQLException e) {
-            return null;
-        }
+    public Integer addDevice(Device device) {
+        String query = "INSERT INTO devices VALUES " + device.toQuery();
+        return db.updateQuery(query);
     }
 
     public Integer removeDevice(String id) {
-        String update = String.format("DELETE FROM devices WHERE id = '%s'", id);
-        try (Statement stmt = con.createStatement()) {
-            return stmt.executeUpdate(update);
-        } catch (SQLException e) {
-            return null;
-        }
+        String query = String.format("DELETE FROM devices WHERE id = '%s'", id);
+        return db.updateQuery(query);
     }
 }

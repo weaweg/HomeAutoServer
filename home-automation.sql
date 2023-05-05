@@ -1,33 +1,53 @@
-CREATE OR REPLACE TABLE measurments (
-	sensor_id INT NOT NULL,
-	device_id char(10) NOT NULL,
-	measure_time TIMESTAMP NOT NULL,
-	measurment FLOAT NOT NULL
+CREATE OR REPLACE TABLE measurments
+(
+	device_id		CHAR(5)			NOT NULL,
+	sensor_id		INT	UNSIGNED	NOT NULL,
+	m_time			INT UNSIGNED	NOT NULL,
+	val				FLOAT			NOT NULL
 );
 
-CREATE OR REPLACE TABLE sensors (
-	id INT NOT NULL,
-	device_id char(10) NOT NULL,
-	data_type INT NOT NULL,
-	current_state INT,
-	units varchar(5),
-	period INT,
-	PRIMARY KEY (id, device_id)
+CREATE OR REPLACE TABLE sensors
+(
+	device_id		char(5)			NOT NULL,
+	id				INT	UNSIGNED	NOT NULL,
+	data_type		INT	UNSIGNED	NOT NULL,
+	current_state	INT	UNSIGNED	NOT NULL,
+	units			varchar(5),
+	period			INT		NOT NULL,
+	PRIMARY KEY (device_id, id),
+	CONSTRAINT CHECK(data_type = 0 or data_type = 1)
 );
 
-CREATE OR REPLACE TABLE devices (
-	id char(5) NOT NULL,
-	name varchar(30) NOT NULL UNIQUE,
-	location varchar(30),
-	sens_nb INT NOT NULL,
+CREATE OR REPLACE TABLE devices
+(
+	id				char(5)		NOT NULL,
+	name			varchar(30)	NOT NULL UNIQUE,
+	location		varchar(30),
 	PRIMARY KEY (id)
 );
 
 ALTER TABLE measurments ADD CONSTRAINT measurments_fk0
-FOREIGN KEY (sensor_id, device_id) REFERENCES sensors(id, device_id);
+FOREIGN KEY (device_id, sensor_id) REFERENCES sensors (device_id, id)
+ON DELETE CASCADE;
 
-ALTER TABLE sensors ADD CONSTRAINT sensors_fk0 FOREIGN KEY (device_id) REFERENCES devices(id);
+ALTER TABLE sensors ADD CONSTRAINT sensors_fk0
+FOREIGN KEY (device_id) REFERENCES devices (id)
+ON DELETE CASCADE;
 
-INSERT INTO devices VALUES("bb001", "new_bb001", null, 2);
-INSERT INTO sensors VALUES(0, "bb001", 0, null, "°C", 10);
-INSERT INTO sensors VALUES(1, "bb001", 1, 0, null, null);
+INSERT INTO devices VALUES
+("bb001", "new_bb001", null),
+("bb002", "test_bb002", "salon");
+
+INSERT INTO sensors VALUES
+("bb001", 0, 0, 0, "°C", 10),
+("bb001", 1, 1, 0, null, 5),
+("bb002", 0, 0, 0, null, 5);
+
+INSERT INTO measurments VALUES
+("bb001", 0, 1683190612, 12.5),
+("bb001", 0, 1683190622, 13),
+("bb001", 0, 1683190632, 13.5),
+("bb001", 0, 1683190642, 11),
+("bb001", 1, 1683190612, 1),
+("bb001", 1, 1683190617, 5),
+("bb001", 1, 1683190622, 3);
