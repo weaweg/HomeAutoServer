@@ -4,8 +4,8 @@ import java.sql.*;
 
 public class RepositoryConnection {
     private static final String url = "jdbc:mariadb://localhost:3306/home_auto";
-    private static final String user = "root";
-    private static final String password = "";
+    private static final String user = "automation";
+    private static final String password = "tial2o3";
 
     public Connection connect() throws SQLException {
         return DriverManager.getConnection(url, user, password);

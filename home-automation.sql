@@ -1,8 +1,8 @@
-CREATE OR REPLACE TABLE measurments
+CREATE OR REPLACE TABLE measurements
 (
 	device_id		CHAR(5)			NOT NULL,
 	sensor_id		INT	UNSIGNED	NOT NULL,
-	m_time			INT UNSIGNED	NOT NULL,
+	m_time			LONG			NOT NULL,
 	val				FLOAT			NOT NULL
 );
 
@@ -13,7 +13,7 @@ CREATE OR REPLACE TABLE sensors
 	data_type		INT	UNSIGNED	NOT NULL,
 	current_state	INT	UNSIGNED	NOT NULL,
 	units			varchar(5),
-	period			INT		NOT NULL,
+	period			INT	UNSIGNED	NOT NULL,
 	PRIMARY KEY (device_id, id),
 	CONSTRAINT CHECK(data_type = 0 or data_type = 1)
 );
@@ -26,7 +26,7 @@ CREATE OR REPLACE TABLE devices
 	PRIMARY KEY (id)
 );
 
-ALTER TABLE measurments ADD CONSTRAINT measurments_fk0
+ALTER TABLE measurements ADD CONSTRAINT measurements_fk0
 FOREIGN KEY (device_id, sensor_id) REFERENCES sensors (device_id, id)
 ON DELETE CASCADE;
 
@@ -43,7 +43,7 @@ INSERT INTO sensors VALUES
 ("bb001", 1, 1, 0, null, 5),
 ("bb002", 0, 0, 0, null, 5);
 
-INSERT INTO measurments VALUES
+INSERT INTO measurements VALUES
 ("bb001", 0, 1683190612, 12.5),
 ("bb001", 0, 1683190622, 13),
 ("bb001", 0, 1683190632, 13.5),

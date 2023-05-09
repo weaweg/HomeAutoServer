@@ -19,7 +19,8 @@ public class SecurityConfig {
                 .requestMatchers("*/local/**").access(localAccess)
                 .requestMatchers("/devices/**").permitAll()
                 .requestMatchers("/sensors/**").permitAll()
-                .requestMatchers("/data/**").permitAll()
+                .requestMatchers("/measurements/**").permitAll()
+                .requestMatchers("/error").permitAll()
                 .anyRequest().denyAll();
         return http.build();
     }

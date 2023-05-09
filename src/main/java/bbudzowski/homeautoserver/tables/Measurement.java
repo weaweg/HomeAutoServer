@@ -5,7 +5,7 @@ import java.sql.Timestamp;
 public class Measurement {
     public String device_id;
     public Integer sensor_id;
-    public Timestamp m_time;
+    public Long m_time;
     public Float val;
 
     public String toQuery() {

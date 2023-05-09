@@ -14,7 +14,7 @@ public class MeasurementsRepository {
         Measurement measurement = new Measurement();
         measurement.device_id = rs.getString("device_id");
         measurement.sensor_id = rs.getInt("sensor_id");
-        measurement.m_time = rs.getTimestamp("m_time");
+        measurement.m_time = rs.getLong("m_time");
         measurement.val = rs.getFloat("val");
         return measurement;
     }
@@ -28,7 +28,7 @@ public class MeasurementsRepository {
             while (rs.next())
                 results.add(returnMeasurement(rs));
             return results;
-        } catch (SQLException e) {
+        } catch (Exception e) {
             return null;
         }
     }
