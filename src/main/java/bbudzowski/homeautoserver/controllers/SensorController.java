@@ -1,5 +1,6 @@
 package bbudzowski.homeautoserver.controllers;
 
+import bbudzowski.homeautoserver.CustomResponse;
 import bbudzowski.homeautoserver.repositories.SensorRepository;
 import bbudzowski.homeautoserver.tables.Sensor;
 import org.springframework.http.HttpStatus;
@@ -19,23 +20,29 @@ public class SensorController {
             sensors = sensRepo.getSensor(device_id, id);
         else
             sensors = sensRepo.getAllSensors();
-        if (sensors == null)
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        if (sensors == null){
+            HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+            return new ResponseEntity<>(new CustomResponse(status, "/sensors"), status);
+        }
 
         return new ResponseEntity<>(sensors, HttpStatus.OK);
     }
 
     @PutMapping("/local/add")
     public ResponseEntity<?> addSensor(@RequestBody Sensor sens) {
-        if (sensRepo.addSensor(sens) == null)
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        if (sensRepo.addSensor(sens) == null){
+            HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+            return new ResponseEntity<>(new CustomResponse(status, "/sensors/local/add"), status);
+        }
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @DeleteMapping("/local/delete")
     public ResponseEntity<?> removeSensor(@RequestParam String device_id, @RequestParam Integer id) {
-        if (sensRepo.removeSensor(device_id, id) == null)
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        if (sensRepo.removeSensor(device_id, id) == null){
+            HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+            return new ResponseEntity<>(new CustomResponse(status, "/sensors/local/delete"), status);
+        }
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

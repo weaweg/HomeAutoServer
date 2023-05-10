@@ -25,8 +25,7 @@ public class SensorRepository {
 
     public List<Sensor> getAllSensors() {
         String query = "SELECT * FROM sensors";
-        ResultSet rs = db.selectQuery(query);
-        try {
+        try (ResultSet rs = db.selectQuery(query)) {
             List<Sensor> results = new ArrayList<>();
             while (rs.next())
                 results.add(returnSensor(rs));
@@ -38,8 +37,7 @@ public class SensorRepository {
 
     public Sensor getSensor(String device_id, Integer id) {
         String query = String.format("SELECT * FROM sensors WHERE device_id = '%s' AND id = '%s'", device_id, id);
-        ResultSet rs = db.selectQuery(query);
-        try {
+        try (ResultSet rs = db.selectQuery(query)) {
             rs.next();
             return returnSensor(rs);
         }

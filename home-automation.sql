@@ -21,6 +21,7 @@ CREATE OR REPLACE TABLE sensors
 CREATE OR REPLACE TABLE devices
 (
 	id				char(5)		NOT NULL,
+	ip				char(15)	NOT NULL UNIQUE,
 	name			varchar(30)	NOT NULL UNIQUE,
 	location		varchar(30),
 	PRIMARY KEY (id)

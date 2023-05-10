@@ -14,6 +14,7 @@ public class DeviceRepository {
     private Device returnDevice(ResultSet rs) throws SQLException {
         Device device = new Device();
         device.id = rs.getString("id");
+        device.ip = rs.getString("ip");
         device.name = rs.getString("name");
         device.location = rs.getString("location");
         return device;
@@ -21,8 +22,7 @@ public class DeviceRepository {
 
     public List<Device> getAllDevices() {
         String query = "SELECT * FROM devices";
-        ResultSet rs = db.selectQuery(query);
-        try  {
+        try (ResultSet rs = db.selectQuery(query)) {
             List<Device> results = new ArrayList<>();
             while (rs.next())
                 results.add(returnDevice(rs));
@@ -34,8 +34,7 @@ public class DeviceRepository {
 
     public Device getDevice(String id) {
         String query = String.format("SELECT * FROM devices WHERE id = '%s'", id);
-        ResultSet rs = db.selectQuery(query);
-        try {
+        try (ResultSet rs = db.selectQuery(query)) {
             rs.next();
             return returnDevice(rs);
         } catch (SQLException e) {
@@ -50,6 +49,11 @@ public class DeviceRepository {
 
     public Integer removeDevice(String id) {
         String query = String.format("DELETE FROM devices WHERE id = '%s'", id);
+        return db.updateQuery(query);
+    }
+
+    public Integer updateDevicesIP(String id, String ip) {
+        String query = String.format("UPDATE devices SET ip = '%s' WHERE id = '%s'", ip, id);
         return db.updateQuery(query);
     }
 }

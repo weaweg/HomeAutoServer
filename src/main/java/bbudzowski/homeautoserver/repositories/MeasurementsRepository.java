@@ -22,8 +22,7 @@ public class MeasurementsRepository {
     public List<Measurement> getAllMeasurementsForSensor(String device_id, Integer sensor_id) {
         String query = String.format(
                 "SELECT * FROM measurements WHERE device_id = '%s' AND sensor_id = '%s'" , device_id, sensor_id);
-        ResultSet rs = db.selectQuery(query);
-        try  {
+        try (ResultSet rs = db.selectQuery(query)){
             List<Measurement> results = new ArrayList<>();
             while (rs.next())
                 results.add(returnMeasurement(rs));

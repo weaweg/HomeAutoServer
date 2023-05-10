@@ -14,8 +14,9 @@ public class RepositoryConnection {
     public Integer updateQuery(String query) {
         try (Connection con = this.connect()) {
             Statement stmt = con.createStatement();
-            Integer rows = stmt.executeUpdate(query);
+            int rows = stmt.executeUpdate(query);
             con.close();
+            if (rows == 0) return null;
             return rows;
         } catch (SQLException e) {
             return null;
