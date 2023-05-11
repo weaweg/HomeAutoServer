@@ -1,11 +1,11 @@
-package bbudzowski.homeautoserver;
+package bbudzowski.homeautoserver.repositories;
 
 import java.sql.*;
 
 public class RepositoryConnection {
-    private static final String url = "jdbc:mariadb://localhost:3306/home_auto";
-    private static final String user = "automation";
-    private static final String password = "tial2o3";
+    protected static final String url = "jdbc:mariadb://localhost:3306/home_auto";
+    protected static final String user = "automation";
+    protected static final String password = "tial2o3";
 
     public Connection connect() throws SQLException {
         return DriverManager.getConnection(url, user, password);

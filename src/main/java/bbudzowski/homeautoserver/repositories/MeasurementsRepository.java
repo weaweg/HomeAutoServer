@@ -1,6 +1,5 @@
 package bbudzowski.homeautoserver.repositories;
 
-import bbudzowski.homeautoserver.RepositoryConnection;
 import bbudzowski.homeautoserver.tables.Measurement;
 
 import java.sql.ResultSet;
@@ -8,8 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MeasurementsRepository {
-    private final RepositoryConnection db = new RepositoryConnection();
+public class MeasurementsRepository extends RepositoryConnection {
     private Measurement returnMeasurement(ResultSet rs) throws SQLException {
         Measurement measurement = new Measurement();
         measurement.device_id = rs.getString("device_id");
@@ -22,7 +20,7 @@ public class MeasurementsRepository {
     public List<Measurement> getAllMeasurementsForSensor(String device_id, Integer sensor_id) {
         String query = String.format(
                 "SELECT * FROM measurements WHERE device_id = '%s' AND sensor_id = '%s'" , device_id, sensor_id);
-        try (ResultSet rs = db.selectQuery(query)){
+        try (ResultSet rs = selectQuery(query)){
             List<Measurement> results = new ArrayList<>();
             while (rs.next())
                 results.add(returnMeasurement(rs));
@@ -34,6 +32,6 @@ public class MeasurementsRepository {
 
     public Integer addMeasurement(Measurement ms) {
         String query = "INSERT INTO measurements VALUES " + ms.toQuery();
-        return db.updateQuery(query);
+        return updateQuery(query);
     }
 }

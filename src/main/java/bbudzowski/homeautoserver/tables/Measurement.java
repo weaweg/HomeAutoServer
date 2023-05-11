@@ -1,11 +1,21 @@
 package bbudzowski.homeautoserver.tables;
 
+import jakarta.persistence.*;
+
 import java.sql.Timestamp;
 
+@Entity
+@Table(name = "measurements")
 public class Measurement {
+    @Id
+    public Long id;
+    @Column(nullable = false)
     public String device_id;
-    public Integer sensor_id;
-    public Long m_time;
+    @Column(nullable = false)
+    public String sensor_id;
+    @Column(nullable = false)
+    public Timestamp m_time;
+    @Column(nullable = false)
     public Float val;
 
     public String toQuery() {

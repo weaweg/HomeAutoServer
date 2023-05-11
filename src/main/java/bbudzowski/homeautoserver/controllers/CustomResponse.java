@@ -1,4 +1,4 @@
-package bbudzowski.homeautoserver;
+package bbudzowski.homeautoserver.controllers;
 
 import org.springframework.http.HttpStatus;
 

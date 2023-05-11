@@ -1,38 +1,49 @@
 CREATE OR REPLACE TABLE measurements
 (
+	id				BIGINT,
 	device_id		CHAR(5)			NOT NULL,
-	sensor_id		INT	UNSIGNED	NOT NULL,
-	m_time			LONG			NOT NULL,
-	val				FLOAT			NOT NULL
+	sensor_id		CHAR(3)			NOT NULL,
+	m_time			TIMESTAMP		NOT NULL,
+	val				FLOAT			NOT NULL,
+	PRIMARY KEY (id)
 );
 
 CREATE OR REPLACE TABLE sensors
 (
-	device_id		char(5)			NOT NULL,
-	id				INT	UNSIGNED	NOT NULL,
-	data_type		INT	UNSIGNED	NOT NULL,
-	current_state	INT	UNSIGNED	NOT NULL,
-	units			varchar(5),
-	period			INT	UNSIGNED	NOT NULL,
-	PRIMARY KEY (device_id, id),
+	device_id		CHAR(5),
+	sensor_id		CHAR(3),
+	data_type		BOOLEAN			NOT NULL,
+	states_count	INT UNSIGNED,
+	current_state	INT	UNSIGNED,
+	units			VARCHAR(5),
+	period			INT	UNSIGNED,
+	PRIMARY KEY (device_id, sensor_id),
 	CONSTRAINT CHECK(data_type = 0 or data_type = 1)
 );
 
 CREATE OR REPLACE TABLE devices
 (
-	id				char(5)		NOT NULL,
-	ip				char(15)	NOT NULL UNIQUE,
-	name			varchar(30)	NOT NULL UNIQUE,
-	location		varchar(30),
-	PRIMARY KEY (id)
+	device_id		CHAR(5),
+	ip_address		INET4			NOT NULL UNIQUE,
+	name			VARCHAR(30)		NOT NULL UNIQUE,
+	location		VARCHAR(30),
+	PRIMARY KEY (device_id)
 );
 
-ALTER TABLE measurements ADD CONSTRAINT measurements_fk0
-FOREIGN KEY (device_id, sensor_id) REFERENCES sensors (device_id, id)
+CREATE OR REPLACE TABLE users
+(
+	user_id			INT,
+	username		VARCHAR(30) 	NOT NULL,
+	password		VARCHAR(		NOT NULL,
+	PRIMARY KEY (user_id)
+);
+
+ALTER TABLE measurements ADD CONSTRAINT measurements
+FOREIGN KEY (device_id, sensor_id) REFERENCES sensors
 ON DELETE CASCADE;
 
 ALTER TABLE sensors ADD CONSTRAINT sensors_fk0
-FOREIGN KEY (device_id) REFERENCES devices (id)
+FOREIGN KEY (device_id) REFERENCES devices
 ON DELETE CASCADE;
 
 INSERT INTO devices VALUES

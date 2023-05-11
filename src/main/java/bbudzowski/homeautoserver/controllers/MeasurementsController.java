@@ -1,6 +1,5 @@
 package bbudzowski.homeautoserver.controllers;
 
-import bbudzowski.homeautoserver.CustomResponse;
 import bbudzowski.homeautoserver.repositories.MeasurementsRepository;
 import bbudzowski.homeautoserver.tables.Measurement;
 import org.springframework.http.HttpStatus;

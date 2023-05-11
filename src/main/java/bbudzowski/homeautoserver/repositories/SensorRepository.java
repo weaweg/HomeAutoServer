@@ -1,6 +1,5 @@
 package bbudzowski.homeautoserver.repositories;
 
-import bbudzowski.homeautoserver.RepositoryConnection;
 import bbudzowski.homeautoserver.tables.Sensor;
 
 import java.sql.ResultSet;
@@ -8,8 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SensorRepository {
-    private final RepositoryConnection db = new RepositoryConnection();
+public class SensorRepository extends RepositoryConnection {
 
     private Sensor returnSensor(ResultSet rs) throws SQLException {
         Sensor sens = new Sensor();
@@ -25,7 +23,7 @@ public class SensorRepository {
 
     public List<Sensor> getAllSensors() {
         String query = "SELECT * FROM sensors";
-        try (ResultSet rs = db.selectQuery(query)) {
+        try (ResultSet rs = selectQuery(query)) {
             List<Sensor> results = new ArrayList<>();
             while (rs.next())
                 results.add(returnSensor(rs));
@@ -37,7 +35,7 @@ public class SensorRepository {
 
     public Sensor getSensor(String device_id, Integer id) {
         String query = String.format("SELECT * FROM sensors WHERE device_id = '%s' AND id = '%s'", device_id, id);
-        try (ResultSet rs = db.selectQuery(query)) {
+        try (ResultSet rs = selectQuery(query)) {
             rs.next();
             return returnSensor(rs);
         }
@@ -49,11 +47,11 @@ public class SensorRepository {
     public Integer addSensor(Sensor sens) {
         if(sens.current_state == null) sens.current_state = 0;
         String query = "INSERT INTO sensors VALUES " + sens.toQuery();
-        return db.updateQuery(query);
+        return updateQuery(query);
     }
 
     public Integer removeSensor(String device_id, Integer id) {
         String query = String.format("DELETE FROM sensors WHERE id = '%s'", id);
-        return db.updateQuery(query);
+        return updateQuery(query);
     }
 }
