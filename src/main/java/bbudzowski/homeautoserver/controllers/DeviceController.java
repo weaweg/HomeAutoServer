@@ -1,60 +1,66 @@
 package bbudzowski.homeautoserver.controllers;
 
 import bbudzowski.homeautoserver.repositories.DeviceRepository;
-import bbudzowski.homeautoserver.tables.Device;
+import bbudzowski.homeautoserver.tables.DeviceEntity;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
-@RequestMapping("/devices")
+@RequestMapping("/device")
 public class DeviceController {
     private final DeviceRepository devRepo = new DeviceRepository();
 
-    @GetMapping()
-    public ResponseEntity<?> getDevice(@RequestParam(required = false) String id) {
-        Object devices;
-        if (id != null)
-            devices = devRepo.getDevice(id);
-        else
-            devices = devRepo.getAllDevices();
+    @GetMapping("/all")
+    public ResponseEntity<?> getDevices(HttpServletRequest request ) {
+        List<DeviceEntity> devices = devRepo.getAllDevices();
         if (devices == null) {
-            HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
-            return new ResponseEntity<>(new CustomResponse(status, "/devices"), status);
+            HttpStatus status = HttpStatus.NOT_FOUND;
+            return new ResponseEntity<>(new CustomResponse(status, request.getContextPath()), status);
         }
         return new ResponseEntity<>(devices, HttpStatus.OK);
     }
 
-    @PutMapping("/local/add")
-    public ResponseEntity<?> addDevice(@RequestBody Device dv) {
-        String path = "/devices/local/add";
-        if(devRepo.addDevice(dv) == null) {
-            HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
-            return new ResponseEntity<>(new CustomResponse(status, path), status);
+    @GetMapping()
+    public ResponseEntity<?> getDevice(@RequestParam String device_id, HttpServletRequest request) {
+        DeviceEntity device = devRepo.getDevice(device_id);
+        if (device == null) {
+            HttpStatus status = HttpStatus.NOT_FOUND;
+            return new ResponseEntity<>(new CustomResponse(status, request.getContextPath()), status);
         }
-        HttpStatus status = HttpStatus.OK;
-        return new ResponseEntity<>(new CustomResponse(status, path), status);
+        return new ResponseEntity<>(device, HttpStatus.OK);
     }
 
-    @DeleteMapping("/local/delete")
-    public ResponseEntity<?> removeDevice(@RequestParam String id) {
-        String path = "/devices/local/delete";
-        if (devRepo.removeDevice(id) == null) {
-            HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
-            return new ResponseEntity<>(new CustomResponse(status, path), status);
+    @PostMapping("/local/add")
+    public ResponseEntity<?> addDevice(@RequestBody DeviceEntity dv, HttpServletRequest request) {
+        if (devRepo.addDevice(dv) == null) {
+            HttpStatus status = HttpStatus.BAD_REQUEST;
+            return new ResponseEntity<>(new CustomResponse(status, request.getContextPath()), status);
         }
-        HttpStatus status = HttpStatus.OK;
-        return new ResponseEntity<>(new CustomResponse(status, path), status);
+        HttpStatus status = HttpStatus.CREATED;
+        return new ResponseEntity<>(new CustomResponse(status, request.getContextPath()), status);
     }
 
     @PatchMapping("/local/update")
-    public ResponseEntity<?> updateDevicesIP(@RequestParam String id, @RequestParam String ip) {
-        String path = "/devices/local/delete";
-        if(devRepo.updateDevicesIP(id, ip) == null) {
-            HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
-            return new ResponseEntity<>(new CustomResponse(status, path), status);
+    public ResponseEntity<?> updateDevice(@RequestBody DeviceEntity device, HttpServletRequest request) {
+        if (devRepo.updateDevice(device) == null) {
+            HttpStatus status = HttpStatus.BAD_REQUEST;
+            return new ResponseEntity<>(new CustomResponse(status, request.getContextPath()), status);
         }
         HttpStatus status = HttpStatus.OK;
-        return new ResponseEntity<>(new CustomResponse(status, path), status);
+        return new ResponseEntity<>(new CustomResponse(status, request.getContextPath()), status);
+    }
+
+    @DeleteMapping("/local/delete")
+    public ResponseEntity<?> removeDevice(@RequestParam String device_id, HttpServletRequest request) {
+        if (devRepo.deleteDevice(device_id) == null) {
+            HttpStatus status = HttpStatus.BAD_REQUEST;
+            return new ResponseEntity<>(new CustomResponse(status, request.getContextPath()), status);
+        }
+        HttpStatus status = HttpStatus.OK;
+        return new ResponseEntity<>(new CustomResponse(status, request.getContextPath()), status);
     }
 }

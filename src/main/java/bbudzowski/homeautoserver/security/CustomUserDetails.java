@@ -1,7 +1,7 @@
 package bbudzowski.homeautoserver.security;
 
 import bbudzowski.homeautoserver.repositories.UserRepository;
-import bbudzowski.homeautoserver.tables.User;
+import bbudzowski.homeautoserver.tables.UserEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -16,7 +16,7 @@ public class CustomUserDetails implements UserDetailsService, UserDetailsManager
 
     @Override
     public UserDetails loadUserByUsername(String username) {
-        User user = userRepository.getUser(username);
+        UserEntity user = userRepository.getUser(username);
         if (user == null) {
             throw new UsernameNotFoundException(username);
         }
@@ -27,7 +27,7 @@ public class CustomUserDetails implements UserDetailsService, UserDetailsManager
     @Override
     public void createUser(UserDetails user) {
         String password = new BCryptPasswordEncoder().encode(user.getPassword());
-        userRepository.addUser(new User(user.getUsername(), password));
+        userRepository.addUser(new UserEntity(user.getUsername(), password));
     }
 
     @Override

@@ -1,57 +1,50 @@
 package bbudzowski.homeautoserver.repositories;
 
-import bbudzowski.homeautoserver.tables.Sensor;
+import bbudzowski.homeautoserver.tables.SensorEntity;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.stereotype.Repository;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
-public class SensorRepository extends RepositoryConnection {
+@Repository
+public class SensorRepository {
+    @PersistenceContext
+    EntityManager em;
+    String repoName = "sensors";
 
-    private Sensor returnSensor(ResultSet rs) throws SQLException {
-        Sensor sens = new Sensor();
-        sens.id = rs.getInt("id");
-        sens.device_id = rs.getString("device_id");
-        sens.data_type = rs.getInt("data_type");
-        sens.current_state = rs.getInt("current_state");
-        if(rs.wasNull()) sens.current_state = null;
-        sens.units = rs.getString("units");
-        sens.period = rs.getInt("period");
-        return sens;
+    public List<SensorEntity> getAllSensors() {
+        String query = "SELECT * FROM " + repoName;
+        Query nativeQuery = em.createNativeQuery(query, SensorEntity.class);
+        return nativeQuery.getResultList();
     }
 
-    public List<Sensor> getAllSensors() {
-        String query = "SELECT * FROM sensors";
-        try (ResultSet rs = selectQuery(query)) {
-            List<Sensor> results = new ArrayList<>();
-            while (rs.next())
-                results.add(returnSensor(rs));
-            return results;
-        } catch (SQLException e) {
-            return null;
-        }
+    public SensorEntity getSensor(String device_id, String sensor_id) {
+        String query = "SELECT * FROM " + repoName + " WHERE device_id = " + device_id + " AND sensor_id = " + sensor_id;
+        Query nativeQuery = em.createNativeQuery(query, SensorEntity.class);
+        return (SensorEntity) nativeQuery.getSingleResult();
     }
 
-    public Sensor getSensor(String device_id, Integer id) {
-        String query = String.format("SELECT * FROM sensors WHERE device_id = '%s' AND id = '%s'", device_id, id);
-        try (ResultSet rs = selectQuery(query)) {
-            rs.next();
-            return returnSensor(rs);
-        }
-        catch (SQLException e) {
-            return null;
-        }
-    }
-
-    public Integer addSensor(Sensor sens) {
-        if(sens.current_state == null) sens.current_state = 0;
+    public Integer addSensor(SensorEntity sens) {
         String query = "INSERT INTO sensors VALUES " + sens.toQuery();
-        return updateQuery(query);
+        Query nativeQuery = em.createNativeQuery(query, SensorEntity.class);
+        return nativeQuery.executeUpdate();
     }
 
-    public Integer removeSensor(String device_id, Integer id) {
-        String query = String.format("DELETE FROM sensors WHERE id = '%s'", id);
-        return updateQuery(query);
+    @Modifying(flushAutomatically = true, clearAutomatically = true)
+    public Integer updateSensor(SensorEntity sensor) {
+        String query = "UPDATE " + repoName + " SET current_state = " + sensor.current_state +
+                " WHERE device_id = " + sensor.device_id + " AND sensor_id = " + sensor.sensor_id;
+        Query nativeQuery = em.createNativeQuery(query, SensorEntity.class);
+        return nativeQuery.executeUpdate();
+    }
+
+    @Modifying(flushAutomatically = true, clearAutomatically = true)
+    public Integer removeSensor(String device_id, String sensor_id) {
+        String query = "DELETE FROM " + repoName + " WHERE device_id = " + device_id + " AND sensor_id = " + sensor_id;
+        Query nativeQuery = em.createNativeQuery(query, SensorEntity.class);
+        return nativeQuery.executeUpdate();
     }
 }

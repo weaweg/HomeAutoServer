@@ -6,8 +6,9 @@ import java.sql.Timestamp;
 
 @Entity
 @Table(name = "measurements")
-public class Measurement {
+public class MeasurementEntity {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long id;
     @Column(nullable = false)
     public String device_id;

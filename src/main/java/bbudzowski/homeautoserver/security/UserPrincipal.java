@@ -1,15 +1,16 @@
 package bbudzowski.homeautoserver.security;
 
-import bbudzowski.homeautoserver.tables.User;
+import bbudzowski.homeautoserver.tables.UserEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 
-public class UserPrincipal  implements UserDetails {
-    private final User user;
-    public UserPrincipal(User user) {
+public class UserPrincipal implements UserDetails {
+    private final UserEntity user;
+
+    public UserPrincipal(UserEntity user) {
         this.user = user;
     }
 

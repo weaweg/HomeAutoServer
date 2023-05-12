@@ -9,6 +9,7 @@ public class CustomResponse {
     public int status;
     public String desc;
     public String path;
+
     public CustomResponse(HttpStatus status, String path) {
         timestamp = LocalDateTime.now();
         this.status = status.value();

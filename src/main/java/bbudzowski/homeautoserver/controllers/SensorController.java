@@ -1,7 +1,7 @@
 package bbudzowski.homeautoserver.controllers;
 
 import bbudzowski.homeautoserver.repositories.SensorRepository;
-import bbudzowski.homeautoserver.tables.Sensor;
+import bbudzowski.homeautoserver.tables.SensorEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,13 +13,13 @@ public class SensorController {
     private final SensorRepository sensRepo = new SensorRepository();
 
     @GetMapping()
-    public ResponseEntity<?> getSensor(@RequestParam(required = false) String device_id, @RequestParam(required = false) Integer id) {
+    public ResponseEntity<?> getSensor(@RequestParam(required = false) String device_id, @RequestParam(required = false) String sensor_id) {
         Object sensors;
-        if (id != null && device_id != null)
-            sensors = sensRepo.getSensor(device_id, id);
+        if (sensor_id != null && device_id != null)
+            sensors = sensRepo.getSensor(device_id, sensor_id);
         else
             sensors = sensRepo.getAllSensors();
-        if (sensors == null){
+        if (sensors == null) {
             HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
             return new ResponseEntity<>(new CustomResponse(status, "/sensors"), status);
         }
@@ -28,8 +28,8 @@ public class SensorController {
     }
 
     @PutMapping("/local/add")
-    public ResponseEntity<?> addSensor(@RequestBody Sensor sens) {
-        if (sensRepo.addSensor(sens) == null){
+    public ResponseEntity<?> addSensor(@RequestBody SensorEntity sens) {
+        if (sensRepo.addSensor(sens) == null) {
             HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
             return new ResponseEntity<>(new CustomResponse(status, "/sensors/local/add"), status);
         }
@@ -37,8 +37,8 @@ public class SensorController {
     }
 
     @DeleteMapping("/local/delete")
-    public ResponseEntity<?> removeSensor(@RequestParam String device_id, @RequestParam Integer id) {
-        if (sensRepo.removeSensor(device_id, id) == null){
+    public ResponseEntity<?> removeSensor(@RequestParam String device_id, @RequestParam String sensor_id) {
+        if (sensRepo.removeSensor(device_id, sensor_id) == null) {
             HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
             return new ResponseEntity<>(new CustomResponse(status, "/sensors/local/delete"), status);
         }
