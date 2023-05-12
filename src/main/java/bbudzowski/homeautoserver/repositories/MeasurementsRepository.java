@@ -12,19 +12,19 @@ import java.util.List;
 @Repository
 public class MeasurementsRepository {
     @PersistenceContext
-    EntityManager em;
-    String repoName = "measurements";
+    private EntityManager em;
+    private final String repoName = "measurements";
 
     public List<MeasurementEntity> getMeasurementsForSensor(String device_id, String sensor_id, Date startDate, Date endDate) {
-        String query = "SELECT * FROM " + repoName + " WHERE device_id = " + device_id + " AND sensor_id = " + sensor_id +
-                " AND m_time BETWEEN " + startDate + " AND " + endDate;
+        String query = String.format("SELECT * FROM %s  WHERE device_id = '%s' AND sensor_id = '%s' AND m_time BETWEEN '%s' AND '%s'",
+                repoName, device_id, sensor_id, startDate, endDate);
         Query nativeQuery = em.createNativeQuery(query, MeasurementEntity.class);
         return nativeQuery.getResultList();
     }
 
     public MeasurementEntity getLastMeasurementForSensor(String device_id, String sensor_id) {
-        String query = "SELECT * FROM " + repoName + " WHERE device_id = " + device_id +
-                " AND sensor_id = " + sensor_id + " LIMIT 1";
+        String query = String.format("SELECT * FROM %s WHERE device_id = '%s' AND sensor_id = '%s' LIMIT 1",
+                repoName, device_id, sensor_id);
         Query nativeQuery = em.createNativeQuery(query, MeasurementEntity.class);
         return (MeasurementEntity) nativeQuery.getSingleResult();
     }

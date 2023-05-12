@@ -3,12 +3,12 @@ package bbudzowski.homeautoserver.tables;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "automates", uniqueConstraints = {
+@Table(name = "automatons", uniqueConstraints = {
         @UniqueConstraint(columnNames = "name")})
-public class AutomateEntity {
+public class AutomatonEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public String id;
+    public Integer id;
     @Column(nullable = false)
     public String name;
     @Column(nullable = false)

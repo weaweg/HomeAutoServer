@@ -2,6 +2,7 @@ package bbudzowski.homeautoserver.controllers;
 
 import bbudzowski.homeautoserver.repositories.MeasurementsRepository;
 import bbudzowski.homeautoserver.tables.MeasurementEntity;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,8 +12,10 @@ import java.sql.Timestamp;
 import java.util.List;
 
 @RestController
-@RequestMapping("/measurements")
+@RequestMapping("/measurement")
 public class MeasurementsController {
+
+    @Autowired
     private final MeasurementsRepository msRepo = new MeasurementsRepository();
 
     @GetMapping()
@@ -27,12 +30,7 @@ public class MeasurementsController {
         return new ResponseEntity<>(measurements, HttpStatus.OK);
     }
 
-    @PutMapping("/changeState")
-    public ResponseEntity<?> changeState(@RequestParam String device_id, @RequestParam Integer sensor_id, @RequestParam int val) {
-        return null;
-    }
-
-    @PutMapping("/local/add")
+    @PostMapping("/local/add")
     public ResponseEntity<?> addMeasurement(@RequestBody MeasurementEntity measurement) {
         measurement.m_time = new Timestamp(System.currentTimeMillis());
         if (msRepo.addMeasurement(measurement) == null) {

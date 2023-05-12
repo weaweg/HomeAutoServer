@@ -1,7 +1,7 @@
 package bbudzowski.homeautoserver.controllers;
 
-import bbudzowski.homeautoserver.repositories.DeviceRepository;
-import bbudzowski.homeautoserver.tables.DeviceEntity;
+import bbudzowski.homeautoserver.repositories.AutomatonRepository;
+import bbudzowski.homeautoserver.tables.AutomatonEntity;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,35 +11,35 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/device")
-public class DeviceController {
+@RequestMapping("/automaton")
+public class AutomatonController {
 
     @Autowired
-    private final DeviceRepository devRepo = new DeviceRepository();
+    private final AutomatonRepository autoRepo = new AutomatonRepository();
 
     @GetMapping("/all")
-    public ResponseEntity<?> getDevices(HttpServletRequest request ) {
-        List<DeviceEntity> devices = devRepo.getAllDevices();
-        if (devices == null) {
+    public ResponseEntity<?> getAutomatons(HttpServletRequest request) {
+        List<AutomatonEntity> automatons = autoRepo.getAllAutomatons();
+        if (automatons == null) {
             HttpStatus status = HttpStatus.NOT_FOUND;
             return new ResponseEntity<>(new CustomResponse(status, request.getContextPath()), status);
         }
-        return new ResponseEntity<>(devices, HttpStatus.OK);
+        return new ResponseEntity<>(automatons, HttpStatus.OK);
     }
 
     @GetMapping()
-    public ResponseEntity<?> getDevice(@RequestParam String device_id, HttpServletRequest request) {
-        DeviceEntity device = devRepo.getDevice(device_id);
-        if (device == null) {
+    public ResponseEntity<?> getAutomaton(@RequestParam String name, HttpServletRequest request) {
+        AutomatonEntity automaton = autoRepo.getAutomaton(name);
+        if (automaton == null) {
             HttpStatus status = HttpStatus.NOT_FOUND;
             return new ResponseEntity<>(new CustomResponse(status, request.getContextPath()), status);
         }
-        return new ResponseEntity<>(device, HttpStatus.OK);
+        return new ResponseEntity<>(automaton, HttpStatus.OK);
     }
 
-    @PostMapping("/local/add")
-    public ResponseEntity<?> addDevice(@RequestBody DeviceEntity dv, HttpServletRequest request) {
-        if (devRepo.addDevice(dv) == null) {
+    @PostMapping("/add")
+    public ResponseEntity<?> addAutomaton(@RequestBody AutomatonEntity automaton, HttpServletRequest request) {
+        if(autoRepo.addAutomaton(automaton) == null) {
             HttpStatus status = HttpStatus.BAD_REQUEST;
             return new ResponseEntity<>(new CustomResponse(status, request.getContextPath()), status);
         }
@@ -47,9 +47,9 @@ public class DeviceController {
         return new ResponseEntity<>(new CustomResponse(status, request.getContextPath()), status);
     }
 
-    @PatchMapping("/local/update")
-    public ResponseEntity<?> updateDevice(@RequestBody DeviceEntity device, HttpServletRequest request) {
-        if (devRepo.updateDevice(device) == null) {
+    @PatchMapping("/update")
+    public ResponseEntity<?> updateAutomaton(@RequestBody AutomatonEntity automaton, HttpServletRequest request) {
+        if (autoRepo.updateAutomaton(automaton) == null) {
             HttpStatus status = HttpStatus.BAD_REQUEST;
             return new ResponseEntity<>(new CustomResponse(status, request.getContextPath()), status);
         }
@@ -57,9 +57,9 @@ public class DeviceController {
         return new ResponseEntity<>(new CustomResponse(status, request.getContextPath()), status);
     }
 
-    @DeleteMapping("/local/delete")
-    public ResponseEntity<?> removeDevice(@RequestParam String device_id, HttpServletRequest request) {
-        if (devRepo.deleteDevice(device_id) == null) {
+    @DeleteMapping("/delete")
+    public ResponseEntity<?> deleteAutomaton(@RequestParam String name, HttpServletRequest request) {
+        if (autoRepo.deleteAutomaton(name) == null) {
             HttpStatus status = HttpStatus.BAD_REQUEST;
             return new ResponseEntity<>(new CustomResponse(status, request.getContextPath()), status);
         }

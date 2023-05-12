@@ -8,7 +8,7 @@ CREATE OR REPLACE TABLE measurements
 	PRIMARY KEY (id)
 );
 
-CREATE OR REPLACE TABLE automates
+CREATE OR REPLACE TABLE automatons
 (
 	id				INT				NOT NULL AUTO_INCREMENT,
 	name			VARCHAR(30)		NOT NULL UNIQUE,
@@ -59,11 +59,11 @@ ALTER TABLE sensors ADD CONSTRAINT sensors_fk0
 FOREIGN KEY (device_id) REFERENCES devices
 ON DELETE CASCADE;
 
-ALTER TABLE automates ADD CONSTRAINT automates_fk0
+ALTER TABLE automatons ADD CONSTRAINT automatons_fk0
 FOREIGN KEY (device_id_sens, sensor_id_sens) REFERENCES sensors (device_id, sensor_id)
 ON DELETE CASCADE;
 
-ALTER TABLE automates ADD CONSTRAINT automates_fk1
+ALTER TABLE automatons ADD CONSTRAINT automatons_fk1
 FOREIGN KEY (device_id_acts, sensor_id_acts) REFERENCES sensors (device_id, sensor_id)
 ON DELETE CASCADE;
 
