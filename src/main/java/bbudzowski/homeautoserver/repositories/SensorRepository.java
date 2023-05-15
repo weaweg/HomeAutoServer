@@ -11,9 +11,9 @@ import java.util.List;
 
 @Repository
 public class SensorRepository {
+    private final String repoName = "sensors";
     @PersistenceContext
     private EntityManager em;
-    private final String repoName = "sensors";
 
     public List<SensorEntity> getAllSensors() {
         String query = "SELECT * FROM " + repoName;
@@ -35,7 +35,7 @@ public class SensorRepository {
     }
 
     @Modifying(flushAutomatically = true, clearAutomatically = true)
-    public Integer updateSensor(SensorEntity sensor) {
+    public Integer changeSensorState(SensorEntity sensor) {
         String query = String.format("UPDATE %s SET current_state = '%s' WHERE device_id = '%s' AND sensor_id = '%s'",
                 repoName, sensor.current_state, sensor.device_id, sensor.sensor_id);
         Query nativeQuery = em.createNativeQuery(query, SensorEntity.class);

@@ -12,9 +12,9 @@ import java.util.List;
 
 @Repository
 public class DeviceRepository {
+    private final String repoName = "devices";
     @PersistenceContext
     private EntityManager em;
-    private final String repoName = "devices";
 
     public List<DeviceEntity> getAllDevices() {
         String query = "SELECT * FROM " + repoName;
@@ -28,7 +28,7 @@ public class DeviceRepository {
         return (DeviceEntity) nativeQuery.getSingleResult();
     }
 
-   @Transactional
+    @Transactional
     public Integer addDevice(DeviceEntity device) {
         String query = "INSERT INTO " + repoName + " VALUES " + device.toQuery();
         Query nativeQuery = em.createNativeQuery(query, DeviceEntity.class);
@@ -37,8 +37,8 @@ public class DeviceRepository {
 
     @Modifying(flushAutomatically = true, clearAutomatically = true)
     public Integer updateDevice(DeviceEntity device) {
-        String query = String.format("UPDATE %s SET ip_address = '%s', name = '%s', location = '%s' WHERE device_id = '%s'",
-                repoName, device.ip_address, device.name, device.location, device.device_id);
+        String query = String.format("UPDATE %s SET name = '%s', location = '%s' WHERE device_id = '%s'",
+                repoName, device.name, device.location, device.device_id);
         Query nativeQuery = em.createNativeQuery(query, DeviceEntity.class);
         return nativeQuery.executeUpdate();
     }

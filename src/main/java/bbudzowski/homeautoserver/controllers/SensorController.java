@@ -11,8 +11,12 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/sensor")
 public class SensorController {
 
+    private final SensorRepository sensRepo;
+
     @Autowired
-    private final SensorRepository sensRepo = new SensorRepository();
+    public SensorController(SensorRepository sensRepo) {
+        this.sensRepo = sensRepo;
+    }
 
     @GetMapping()
     public ResponseEntity<?> getSensor(@RequestParam(required = false) String device_id, @RequestParam(required = false) String sensor_id) {
@@ -29,11 +33,20 @@ public class SensorController {
         return new ResponseEntity<>(sensors, HttpStatus.OK);
     }
 
-    @PutMapping("/local/add")
+    @PostMapping("/local/add")
     public ResponseEntity<?> addSensor(@RequestBody SensorEntity sens) {
         if (sensRepo.addSensor(sens) == null) {
             HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
             return new ResponseEntity<>(new CustomResponse(status, "/sensors/local/add"), status);
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PutMapping("/changeState")
+    public ResponseEntity<?> changeState(@RequestBody SensorEntity sens) {
+        if(sensRepo.changeSensorState(sens) == null)  {
+            HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+            return new ResponseEntity<>(new CustomResponse(status, "/sensors/changeState"), status);
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }

@@ -15,8 +15,12 @@ import java.util.List;
 @RequestMapping("/measurement")
 public class MeasurementsController {
 
+    private final MeasurementsRepository msRepo;
+
     @Autowired
-    private final MeasurementsRepository msRepo = new MeasurementsRepository();
+    public MeasurementsController(MeasurementsRepository msRepo) {
+        this.msRepo = msRepo;
+    }
 
     @GetMapping()
     public ResponseEntity<?> getMeasurementsForSensor(
@@ -33,10 +37,20 @@ public class MeasurementsController {
     @PostMapping("/local/add")
     public ResponseEntity<?> addMeasurement(@RequestBody MeasurementEntity measurement) {
         measurement.m_time = new Timestamp(System.currentTimeMillis());
-        if (msRepo.addMeasurement(measurement) == null) {
-            HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
+        if (msRepo.addMeasurement(measurement) == 0) {
+            HttpStatus status = HttpStatus.BAD_REQUEST;
             return new ResponseEntity<>(new CustomResponse(status, "/measurements/local/add"), status);
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    @PutMapping("/delete")
+    public ResponseEntity<?> deleteMeasurementsForSensor(@RequestParam String device_id, @RequestParam String sensor_id) {
+        if (msRepo.deleteMeasurementsForSensor(device_id, sensor_id) == null) {
+            HttpStatus status = HttpStatus.BAD_REQUEST;
+            return new ResponseEntity<>(new CustomResponse(status, "/measurements/delete"), status);
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
 }

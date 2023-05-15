@@ -1,7 +1,9 @@
 package bbudzowski.homeautoserver.controllers;
 
 import bbudzowski.homeautoserver.repositories.AutomatonRepository;
+import bbudzowski.homeautoserver.repositories.SensorRepository;
 import bbudzowski.homeautoserver.tables.AutomatonEntity;
+import bbudzowski.homeautoserver.tables.SensorEntity;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,8 +16,14 @@ import java.util.List;
 @RequestMapping("/automaton")
 public class AutomatonController {
 
+    private final AutomatonRepository autoRepo;
+    private final SensorRepository sensRepo;
+
     @Autowired
-    private final AutomatonRepository autoRepo = new AutomatonRepository();
+    public AutomatonController(AutomatonRepository autoRepo, SensorRepository sensRepo) {
+        this.autoRepo = autoRepo;
+        this.sensRepo = sensRepo;
+    }
 
     @GetMapping("/all")
     public ResponseEntity<?> getAutomatons(HttpServletRequest request) {
@@ -39,7 +47,13 @@ public class AutomatonController {
 
     @PostMapping("/add")
     public ResponseEntity<?> addAutomaton(@RequestBody AutomatonEntity automaton, HttpServletRequest request) {
-        if(autoRepo.addAutomaton(automaton) == null) {
+        SensorEntity sens = sensRepo.getSensor(automaton.device_id_sens, automaton.sensor_id_sens);
+        SensorEntity acts = sensRepo.getSensor(automaton.device_id_acts, automaton.sensor_id_acts);
+        if (sens.data_type.equals(true) || acts.data_type.equals(false)) {
+            HttpStatus status = HttpStatus.UNPROCESSABLE_ENTITY;
+            return new ResponseEntity<>(new CustomResponse(status, request.getContextPath()), status);
+        }
+        if (autoRepo.addAutomaton(automaton) == null) {
             HttpStatus status = HttpStatus.BAD_REQUEST;
             return new ResponseEntity<>(new CustomResponse(status, request.getContextPath()), status);
         }

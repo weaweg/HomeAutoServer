@@ -13,7 +13,7 @@ public class SensorEntity {
     @Id
     public String sensor_id;
     @Column(nullable = false)
-    public Integer data_type;
+    public Boolean data_type;
     @Column(nullable = false)
     public Integer current_state;
     @Column(nullable = false)

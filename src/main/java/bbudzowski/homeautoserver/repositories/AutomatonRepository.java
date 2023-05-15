@@ -11,9 +11,9 @@ import java.util.List;
 
 @Repository
 public class AutomatonRepository {
+    private final String repoName = "automatons";
     @PersistenceContext
     private EntityManager em;
-    private final String repoName = "automatons";
 
     public List<AutomatonEntity> getAllAutomatons() {
         String query = "SELECT * FROM " + repoName;
@@ -26,8 +26,7 @@ public class AutomatonRepository {
         Query nativeQuery = em.createNativeQuery(query, AutomatonEntity.class);
         try {
             return (AutomatonEntity) nativeQuery.getSingleResult();
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             return null;
         }
     }
@@ -37,18 +36,17 @@ public class AutomatonRepository {
         Query nativeQuery = em.createNativeQuery(query, AutomatonEntity.class);
         try {
             return nativeQuery.executeUpdate();
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             return null;
         }
     }
 
     @Modifying(flushAutomatically = true, clearAutomatically = true)
     public Integer updateAutomaton(AutomatonEntity automaton) {
-        String query =  String.format(
-                "UPDATE %s SET name = '%s', device_id_sens = '%s', sensor_id_sens = '%s', val = '%s'," +
+        String query = String.format(
+                "UPDATE %s SET name = '%s', device_id_sens = '%s', sensor_id_sens = '%s', val = '%s', direction = '%s'" +
                         "device_id_acts = '%s', sensor_id_acts = '%s', set_state = '%s' WHERE id = '%s'",
-                repoName, automaton.name, automaton.device_id_sens, automaton.sensor_id_sens, automaton.val,
+                repoName, automaton.name, automaton.device_id_sens, automaton.sensor_id_sens, automaton.val, automaton.direction,
                 automaton.device_id_acts, automaton.sensor_id_acts, automaton.set_state, automaton.id);
         Query nativeQuery = em.createNativeQuery(query, AutomatonEntity.class);
         return nativeQuery.executeUpdate();

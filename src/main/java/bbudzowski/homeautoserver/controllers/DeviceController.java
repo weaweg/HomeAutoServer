@@ -13,12 +13,15 @@ import java.util.List;
 @RestController
 @RequestMapping("/device")
 public class DeviceController {
+    private final DeviceRepository devRepo;
 
     @Autowired
-    private final DeviceRepository devRepo = new DeviceRepository();
+    public DeviceController(DeviceRepository devRepo) {
+        this.devRepo = devRepo;
+    }
 
     @GetMapping("/all")
-    public ResponseEntity<?> getDevices(HttpServletRequest request ) {
+    public ResponseEntity<?> getDevices(HttpServletRequest request) {
         List<DeviceEntity> devices = devRepo.getAllDevices();
         if (devices == null) {
             HttpStatus status = HttpStatus.NOT_FOUND;
