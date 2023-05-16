@@ -5,7 +5,6 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -23,30 +22,38 @@ public class DeviceRepository {
     }
 
     public DeviceEntity getDevice(String device_id) {
-        String query = String.format("SELECT * FROM %s WHERE id = '%s'", repoName, device_id);
+        String query = "SELECT * FROM " + repoName + " WHERE device_id = ?";
         Query nativeQuery = em.createNativeQuery(query, DeviceEntity.class);
-        return (DeviceEntity) nativeQuery.getSingleResult();
+        nativeQuery.setParameter(1, device_id);
+        List<DeviceEntity> tmp = nativeQuery.getResultList();
+        return tmp.isEmpty() ? null : tmp.get(0);
     }
 
     @Transactional
-    public Integer addDevice(DeviceEntity device) {
-        String query = "INSERT INTO " + repoName + " VALUES " + device.toQuery();
+    public int addDevice(DeviceEntity device) {
+        String query = "INSERT INTO " + repoName + " VALUES (?, ?, ?)";
         Query nativeQuery = em.createNativeQuery(query, DeviceEntity.class);
+        nativeQuery.setParameter(1, device.device_id);
+        nativeQuery.setParameter(2, device.name);
+        nativeQuery.setParameter(3, device.location);
         return nativeQuery.executeUpdate();
     }
 
-    @Modifying(flushAutomatically = true, clearAutomatically = true)
-    public Integer updateDevice(DeviceEntity device) {
-        String query = String.format("UPDATE %s SET name = '%s', location = '%s' WHERE device_id = '%s'",
-                repoName, device.name, device.location, device.device_id);
+    @Transactional
+    public int updateDevice(DeviceEntity device) {
+        String query = "UPDATE " + repoName + " SET name = ?, location = ? WHERE device_id = ?";
         Query nativeQuery = em.createNativeQuery(query, DeviceEntity.class);
+        nativeQuery.setParameter(1, device.name);
+        nativeQuery.setParameter(2, device.location);
+        nativeQuery.setParameter(3, device.device_id);
         return nativeQuery.executeUpdate();
     }
 
-    @Modifying(flushAutomatically = true, clearAutomatically = true)
-    public Integer deleteDevice(String device_id) {
-        String query = String.format("DELETE FROM %s WHERE id = '%s'", repoName, device_id);
+    @Transactional
+    public int deleteDevice(String device_id) {
+        String query = "DELETE FROM " + repoName + " WHERE device_id = ?";
         Query nativeQuery = em.createNativeQuery(query, DeviceEntity.class);
+        nativeQuery.setParameter(1, device_id);
         return nativeQuery.executeUpdate();
     }
 }

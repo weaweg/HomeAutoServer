@@ -30,7 +30,7 @@ public class AutomatonController {
         List<AutomatonEntity> automatons = autoRepo.getAllAutomatons();
         if (automatons == null) {
             HttpStatus status = HttpStatus.NOT_FOUND;
-            return new ResponseEntity<>(new CustomResponse(status, request.getContextPath()), status);
+            return new ResponseEntity<>(new CustomResponse(status, request), status);
         }
         return new ResponseEntity<>(automatons, HttpStatus.OK);
     }
@@ -40,7 +40,7 @@ public class AutomatonController {
         AutomatonEntity automaton = autoRepo.getAutomaton(name);
         if (automaton == null) {
             HttpStatus status = HttpStatus.NOT_FOUND;
-            return new ResponseEntity<>(new CustomResponse(status, request.getContextPath()), status);
+            return new ResponseEntity<>(new CustomResponse(status, request), status);
         }
         return new ResponseEntity<>(automaton, HttpStatus.OK);
     }
@@ -49,35 +49,35 @@ public class AutomatonController {
     public ResponseEntity<?> addAutomaton(@RequestBody AutomatonEntity automaton, HttpServletRequest request) {
         SensorEntity sens = sensRepo.getSensor(automaton.device_id_sens, automaton.sensor_id_sens);
         SensorEntity acts = sensRepo.getSensor(automaton.device_id_acts, automaton.sensor_id_acts);
-        if (sens.data_type.equals(true) || acts.data_type.equals(false)) {
+        if (sens.data_type == 1 || acts.data_type == 0) {
             HttpStatus status = HttpStatus.UNPROCESSABLE_ENTITY;
-            return new ResponseEntity<>(new CustomResponse(status, request.getContextPath()), status);
+            return new ResponseEntity<>(new CustomResponse(status, request), status);
         }
         if (autoRepo.addAutomaton(automaton) == null) {
             HttpStatus status = HttpStatus.BAD_REQUEST;
-            return new ResponseEntity<>(new CustomResponse(status, request.getContextPath()), status);
+            return new ResponseEntity<>(new CustomResponse(status, request), status);
         }
         HttpStatus status = HttpStatus.CREATED;
-        return new ResponseEntity<>(new CustomResponse(status, request.getContextPath()), status);
+        return new ResponseEntity<>(new CustomResponse(status, request), status);
     }
 
     @PatchMapping("/update")
     public ResponseEntity<?> updateAutomaton(@RequestBody AutomatonEntity automaton, HttpServletRequest request) {
         if (autoRepo.updateAutomaton(automaton) == null) {
             HttpStatus status = HttpStatus.BAD_REQUEST;
-            return new ResponseEntity<>(new CustomResponse(status, request.getContextPath()), status);
+            return new ResponseEntity<>(new CustomResponse(status, request), status);
         }
         HttpStatus status = HttpStatus.OK;
-        return new ResponseEntity<>(new CustomResponse(status, request.getContextPath()), status);
+        return new ResponseEntity<>(new CustomResponse(status, request), status);
     }
 
     @DeleteMapping("/delete")
     public ResponseEntity<?> deleteAutomaton(@RequestParam String name, HttpServletRequest request) {
         if (autoRepo.deleteAutomaton(name) == null) {
             HttpStatus status = HttpStatus.BAD_REQUEST;
-            return new ResponseEntity<>(new CustomResponse(status, request.getContextPath()), status);
+            return new ResponseEntity<>(new CustomResponse(status, request), status);
         }
         HttpStatus status = HttpStatus.OK;
-        return new ResponseEntity<>(new CustomResponse(status, request.getContextPath()), status);
+        return new ResponseEntity<>(new CustomResponse(status, request), status);
     }
 }

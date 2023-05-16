@@ -35,12 +35,12 @@ public class ScheduledTasks {
             SensorEntity acts = sensRepo.getSensor(automaton.device_id_acts, automaton.sensor_id_acts);
             MeasurementEntity lastSensMs =
                     msRepo.getLastMeasurementForSensor(automaton.device_id_sens, automaton.sensor_id_sens);
-            if (automaton.direction)
+            if (automaton.direction == 1)
                 if (lastSensMs.val < automaton.val)
                     continue;
                 else if (lastSensMs.val >= automaton.val)
                     continue;
-            if (acts.current_state.equals(automaton.set_state))
+            if (acts.current_state == automaton.set_state)
                 continue;
             MeasurementEntity newState = new MeasurementEntity();
             newState.device_id = automaton.device_id_acts;

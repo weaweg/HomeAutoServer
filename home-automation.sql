@@ -15,7 +15,7 @@ CREATE OR REPLACE TABLE automatons
     device_id_sens CHAR(5)     NOT NULL,
     sensor_id_sens CHAR(3)     NOT NULL,
     val            FLOAT       NOT NULL,
-    direction      BOOLEAN     NOT NULL,
+    direction      TINYINT     NOT NULL,
     device_id_acts CHAR(5)     NOT NULL,
     sensor_id_acts CHAR(3)     NOT NULL,
     set_state      INT         NOT NULL,
@@ -24,13 +24,12 @@ CREATE OR REPLACE TABLE automatons
 
 CREATE OR REPLACE TABLE sensors
 (
-    device_id     CHAR(5),
-    sensor_id     CHAR(3),
-    data_type     BOOLEAN NOT NULL,
+    device_id     CHAR(5) NOT NULL,
+    sensor_id     CHAR(3) NOT NULL,
+    data_type     TINYINT NOT NULL,
     states_count  INT,
     current_state INT,
     units         VARCHAR(5),
-    period INT,
     PRIMARY KEY (device_id, sensor_id),
     CONSTRAINT CHECK (data_type = 0 or data_type = 1)
 );
