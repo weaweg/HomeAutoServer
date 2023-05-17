@@ -30,7 +30,7 @@ public class DeviceController {
         return new ResponseEntity<>(devices, HttpStatus.OK);
     }
 
-    @GetMapping()
+    @GetMapping({"/", "/local"})
     public ResponseEntity<?> getDevice(@RequestParam String device_id, HttpServletRequest request) {
         DeviceEntity device = devRepo.getDevice(device_id);
         if (device == null) {
@@ -42,6 +42,7 @@ public class DeviceController {
 
     @PostMapping("/local/add")
     public ResponseEntity<?> addDevice(@RequestBody DeviceEntity device, HttpServletRequest request) {
+        device.name = device.device_id;
         HttpStatus status = HttpStatus.CREATED;
         if (devRepo.addDevice(device) == 0)
             status = HttpStatus.BAD_REQUEST;
