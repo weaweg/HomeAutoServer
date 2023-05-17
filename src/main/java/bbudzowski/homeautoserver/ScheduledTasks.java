@@ -27,7 +27,7 @@ public class ScheduledTasks {
         this.msRepo = msRepo;
     }
 
-    @Scheduled(fixedRate = 5 * 1000)
+    @Scheduled(fixedDelay = 1000)
     public void setAutomatons() {
         List<AutomatonEntity> automatons;
         automatons = autoRepo.getAllAutomatons();
@@ -35,17 +35,28 @@ public class ScheduledTasks {
             SensorEntity acts = sensRepo.getSensor(automaton.device_id_acts, automaton.sensor_id_acts);
             MeasurementEntity lastSensMs =
                     msRepo.getLastMeasurementForSensor(automaton.device_id_sens, automaton.sensor_id_sens);
-            if (automaton.direction == 1)
-                if (lastSensMs.val < automaton.val)
-                    continue;
-                else if (lastSensMs.val >= automaton.val)
-                    continue;
-            if (acts.current_state == automaton.set_state)
+            if(lastSensMs == null)
+                return;
+
+            int set_state;
+            if (lastSensMs.val > automaton.val + automaton.hysteresis)
+                set_state = automaton.state_up;
+            else if (lastSensMs.val < automaton.val - automaton.hysteresis)
+                set_state = automaton.state_down;
+            else
                 continue;
+
+            if(acts.current_state == set_state)
+                continue;
+
+            acts.current_state = set_state;
+            if(sensRepo.changeSensorState(acts) == 0)
+                return;
+
             MeasurementEntity newState = new MeasurementEntity();
             newState.device_id = automaton.device_id_acts;
             newState.sensor_id = automaton.sensor_id_acts;
-            newState.val = automaton.set_state.floatValue();
+            newState.val = (float) set_state;
             msRepo.addMeasurement(newState);
         }
     }

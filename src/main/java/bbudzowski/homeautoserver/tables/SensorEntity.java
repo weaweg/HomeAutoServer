@@ -13,8 +13,9 @@ public class SensorEntity {
     public Integer current_state;
     public String units;
 
-    public String toQuery() {
-        return String.format("(%s, %s, %s, %s, %s)",
-                this.device_id, this.sensor_id, this.data_type, this.current_state, this.units);
+    public void copyParams(SensorEntity sensor) {
+        if(sensor.data_type != null) data_type = sensor.data_type;
+        if(sensor.current_state != null) current_state = sensor.current_state;
+        if(sensor.units != null) units = sensor.units;
     }
 }

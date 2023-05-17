@@ -42,36 +42,31 @@ public class DeviceController {
 
     @PostMapping("/local/add")
     public ResponseEntity<?> addDevice(@RequestBody DeviceEntity device, HttpServletRequest request) {
-        if (devRepo.addDevice(device) == 0) {
-            HttpStatus status = HttpStatus.BAD_REQUEST;
-            return new ResponseEntity<>(new CustomResponse(status, request), status);
-        }
         HttpStatus status = HttpStatus.CREATED;
+        if (devRepo.addDevice(device) == 0)
+            status = HttpStatus.BAD_REQUEST;
         return new ResponseEntity<>(new CustomResponse(status, request), status);
     }
 
-    @PatchMapping("/update")
+    @PutMapping("/update")
     public ResponseEntity<?> updateDevice(@RequestBody DeviceEntity device, HttpServletRequest request) {
         DeviceEntity dbDevice = devRepo.getDevice(device.device_id);
         HttpStatus status = HttpStatus.OK;
-        if(dbDevice == null) {
+        if(dbDevice == null)
             status = HttpStatus.NOT_FOUND;
-            return new ResponseEntity<>(new CustomResponse(status, request), status);
+        else {
+            dbDevice.copyParams(device);
+            if (devRepo.updateDevice(dbDevice) == 0)
+                status = HttpStatus.BAD_REQUEST;
         }
-
-        dbDevice.copyParams(device);
-        if (devRepo.updateDevice(dbDevice) == 0)
-            status = HttpStatus.BAD_REQUEST;
         return new ResponseEntity<>(new CustomResponse(status, request), status);
     }
 
     @DeleteMapping("/local/delete")
     public ResponseEntity<?> removeDevice(@RequestParam String device_id, HttpServletRequest request) {
-        if (devRepo.deleteDevice(device_id) == 0) {
-            HttpStatus status = HttpStatus.BAD_REQUEST;
-            return new ResponseEntity<>(new CustomResponse(status, request), status);
-        }
         HttpStatus status = HttpStatus.OK;
+        if (devRepo.deleteDevice(device_id) == 0)
+            status = HttpStatus.BAD_REQUEST;
         return new ResponseEntity<>(new CustomResponse(status, request), status);
     }
 }

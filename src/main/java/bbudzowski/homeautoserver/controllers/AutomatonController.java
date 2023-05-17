@@ -28,7 +28,7 @@ public class AutomatonController {
     @GetMapping("/all")
     public ResponseEntity<?> getAutomatons(HttpServletRequest request) {
         List<AutomatonEntity> automatons = autoRepo.getAllAutomatons();
-        if (automatons == null) {
+        if (automatons.isEmpty()) {
             HttpStatus status = HttpStatus.NOT_FOUND;
             return new ResponseEntity<>(new CustomResponse(status, request), status);
         }
@@ -49,35 +49,35 @@ public class AutomatonController {
     public ResponseEntity<?> addAutomaton(@RequestBody AutomatonEntity automaton, HttpServletRequest request) {
         SensorEntity sens = sensRepo.getSensor(automaton.device_id_sens, automaton.sensor_id_sens);
         SensorEntity acts = sensRepo.getSensor(automaton.device_id_acts, automaton.sensor_id_acts);
-        if (sens.data_type == 1 || acts.data_type == 0) {
-            HttpStatus status = HttpStatus.UNPROCESSABLE_ENTITY;
-            return new ResponseEntity<>(new CustomResponse(status, request), status);
-        }
-        if (autoRepo.addAutomaton(automaton) == null) {
-            HttpStatus status = HttpStatus.BAD_REQUEST;
-            return new ResponseEntity<>(new CustomResponse(status, request), status);
-        }
         HttpStatus status = HttpStatus.CREATED;
+        if (sens == null || acts == null)
+            status = HttpStatus.NOT_FOUND;
+        else if (sens.data_type >= 1 || acts.data_type <= 0)
+            status = HttpStatus.UNPROCESSABLE_ENTITY;
+        else if (autoRepo.addAutomaton(automaton) == 0)
+            status = HttpStatus.BAD_REQUEST;
         return new ResponseEntity<>(new CustomResponse(status, request), status);
     }
 
-    @PatchMapping("/update")
+    @PutMapping("/update")
     public ResponseEntity<?> updateAutomaton(@RequestBody AutomatonEntity automaton, HttpServletRequest request) {
-        if (autoRepo.updateAutomaton(automaton) == null) {
-            HttpStatus status = HttpStatus.BAD_REQUEST;
-            return new ResponseEntity<>(new CustomResponse(status, request), status);
-        }
+        AutomatonEntity dbAutomaton = autoRepo.getAutomaton(automaton.name);
         HttpStatus status = HttpStatus.OK;
+        if(dbAutomaton == null)
+            status = HttpStatus.NOT_FOUND;
+        else {
+            dbAutomaton.copyParams(automaton);
+            if (autoRepo.updateAutomaton(dbAutomaton) == 0)
+                status = HttpStatus.BAD_REQUEST;
+        }
         return new ResponseEntity<>(new CustomResponse(status, request), status);
     }
 
     @DeleteMapping("/delete")
     public ResponseEntity<?> deleteAutomaton(@RequestParam String name, HttpServletRequest request) {
-        if (autoRepo.deleteAutomaton(name) == null) {
-            HttpStatus status = HttpStatus.BAD_REQUEST;
-            return new ResponseEntity<>(new CustomResponse(status, request), status);
-        }
         HttpStatus status = HttpStatus.OK;
+        if (autoRepo.deleteAutomaton(name) == 0)
+            status = HttpStatus.BAD_REQUEST;
         return new ResponseEntity<>(new CustomResponse(status, request), status);
     }
 }

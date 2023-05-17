@@ -10,16 +10,16 @@ CREATE OR REPLACE TABLE measurements
 
 CREATE OR REPLACE TABLE automatons
 (
-    id             INT         NOT NULL AUTO_INCREMENT,
-    name           VARCHAR(30) NOT NULL UNIQUE,
+    name           VARCHAR(30) NOT NULL,
     device_id_sens CHAR(5)     NOT NULL,
     sensor_id_sens CHAR(3)     NOT NULL,
     val            FLOAT       NOT NULL,
-    direction      TINYINT     NOT NULL,
+	hysteresis     FLOAT       NOT NULL,
     device_id_acts CHAR(5)     NOT NULL,
     sensor_id_acts CHAR(3)     NOT NULL,
-    set_state      INT         NOT NULL,
-    PRIMARY KEY (id)
+    state_up       INT         NOT NULL,
+	state_down     INT         NOT NULL,
+    PRIMARY KEY (name)
 );
 
 CREATE OR REPLACE TABLE sensors
@@ -27,7 +27,6 @@ CREATE OR REPLACE TABLE sensors
     device_id     CHAR(5) NOT NULL,
     sensor_id     CHAR(3) NOT NULL,
     data_type     TINYINT NOT NULL,
-    states_count  INT,
     current_state INT,
     units         VARCHAR(5),
     PRIMARY KEY (device_id, sensor_id),
@@ -36,18 +35,10 @@ CREATE OR REPLACE TABLE sensors
 
 CREATE OR REPLACE TABLE devices
 (
-    device_id  CHAR(5),
-    name       VARCHAR(30) NOT NULL UNIQUE,
+    device_id  CHAR(5)     NOT NULL,
+    name       VARCHAR(30) UNIQUE,
     location   VARCHAR(30),
     PRIMARY KEY (device_id)
-);
-
-CREATE OR REPLACE TABLE users
-(
-    user_id  INT         NOT NULL AUTO_INCREMENT,
-    username VARCHAR(30) NOT NULL UNIQUE,
-    password CHAR(60)    NOT NULL,
-    PRIMARY KEY (user_id)
 );
 
 ALTER TABLE measurements
@@ -75,15 +66,19 @@ VALUES ("bb001", "new_bb001", null),
        ("bb002", "test_bb002", "salon");
 
 INSERT INTO sensors
-VALUES ("bb001", 0, 0, 0, "°C", 10),
-       ("bb001", 1, 1, 0, null, 5),
-       ("bb002", 0, 0, 0, null, 5);
+VALUES ("bb001", "t01", 0, null, "°C"),
+       ("bb001", "m01", 1, 5, null),
+       ("bb002", "t01", 0, null, "°F");
 
-INSERT INTO measurements
-VALUES ("bb001", 0, 1683190612, 12.5),
-       ("bb001", 0, 1683190622, 13),
-       ("bb001", 0, 1683190632, 13.5),
-       ("bb001", 0, 1683190642, 11),
-       ("bb001", 1, 1683190612, 1),
-       ("bb001", 1, 1683190617, 5),
-       ("bb001", 1, 1683190622, 3);
+INSERT INTO measurements (device_id, sensor_id, m_time, val)
+VALUES ("bb001", "t01", "2023-02-08T15:04:19", 12.5),
+       ("bb001", "t01", "2023-03-03T14:53:37", 13),
+       ("bb001", "t01", "2023-04-13T11:22:38", 13.5),
+       ("bb001", "t01", "2023-04-24T14:37:06", 11),
+       ("bb001", "m01", "2023-05-04T08:16:43", 1),
+       ("bb001", "m01", "2023-05-05T01:53:51", 5),
+       ("bb001", "m01", "2023-05-14T10:32:29", 3);
+	   
+INSERT INTO automatons (name, device_id_sens, sensor_id_sens, val, hysteresis,
+device_id_acts, sensor_id_acts, state_up, state_down)
+VALUES ("test1", "bb001", "t01", 15, 2, "bb001", "m01", 1, 0);

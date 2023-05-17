@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Date;
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -23,37 +24,45 @@ public class MeasurementsController {
         this.msRepo = msRepo;
     }
 
-    @GetMapping()
+    @GetMapping("/all")
     public ResponseEntity<?> getMeasurementsForSensor(
             @RequestParam String device_id, @RequestParam String sensor_id,
-            @RequestParam Date startTime, @RequestParam Date endTime,
+            @RequestParam String start_time, @RequestParam String end_time,
             HttpServletRequest request) {
-        List<MeasurementEntity> measurements = msRepo.getMeasurementsForSensor(device_id, sensor_id, startTime, endTime);
-        if (measurements == null) {
+        List<MeasurementEntity> measurements = msRepo.getMeasurementsForSensor(device_id, sensor_id, start_time, end_time);
+        if (measurements.isEmpty()) {
             HttpStatus status = HttpStatus.BAD_REQUEST;
             return new ResponseEntity<>(new CustomResponse(status, request), status);
         }
         return new ResponseEntity<>(measurements, HttpStatus.OK);
     }
 
-    @PostMapping("/local/add")
-    public ResponseEntity<?> addMeasurement(@RequestBody MeasurementEntity measurement, HttpServletRequest request) {
-        measurement.m_time = new Timestamp(System.currentTimeMillis());
-        if (msRepo.addMeasurement(measurement) == 0) {
+    @GetMapping("/last")
+    public ResponseEntity<?> getLastMeasurementForSensor(@RequestParam String device_id, @RequestParam String sensor_id,
+                                                         HttpServletRequest request) {
+        MeasurementEntity measurement = msRepo.getLastMeasurementForSensor(device_id, sensor_id);
+        if (measurement == null) {
             HttpStatus status = HttpStatus.BAD_REQUEST;
             return new ResponseEntity<>(new CustomResponse(status, request), status);
         }
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(measurement, HttpStatus.OK);
     }
 
-    @PutMapping("/delete")
+    @PostMapping("/local/add")
+    public ResponseEntity<?> addMeasurement(@RequestBody MeasurementEntity measurement, HttpServletRequest request) {
+        HttpStatus status = HttpStatus.OK;
+        if (msRepo.addMeasurement(measurement) == 0)
+            status = HttpStatus.BAD_REQUEST;
+        return new ResponseEntity<>(new CustomResponse(status, request), status);
+    }
+
+    @DeleteMapping("/delete")
     public ResponseEntity<?> deleteMeasurementsForSensor(@RequestParam String device_id, @RequestParam String sensor_id,
                                                          HttpServletRequest request) {
-        if (msRepo.deleteMeasurementsForSensor(device_id, sensor_id) == null) {
-            HttpStatus status = HttpStatus.BAD_REQUEST;
-            return new ResponseEntity<>(new CustomResponse(status, request), status);
-        }
-        return new ResponseEntity<>(HttpStatus.OK);
+        HttpStatus status = HttpStatus.OK;
+        if (msRepo.deleteMeasurementsForSensor(device_id, sensor_id) == 0)
+            status = HttpStatus.BAD_REQUEST;
+        return new ResponseEntity<>(new CustomResponse(status, request), status);
     }
 
 }

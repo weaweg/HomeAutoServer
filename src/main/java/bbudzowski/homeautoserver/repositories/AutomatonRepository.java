@@ -5,7 +5,6 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -21,39 +20,52 @@ public class AutomatonRepository {
         Query nativeQuery = em.createNativeQuery(query, AutomatonEntity.class);
         return nativeQuery.getResultList();
     }
-
     public AutomatonEntity getAutomaton(String name) {
-        String query = String.format("SELECT * FROM %s WHERE name = %s", repoName, name);
+        String query = "SELECT * FROM " + repoName + " WHERE name = ?";
         Query nativeQuery = em.createNativeQuery(query, AutomatonEntity.class);
+        nativeQuery.setParameter(1, name);
         List<AutomatonEntity> tmp = nativeQuery.getResultList();
         return tmp.isEmpty() ? null : tmp.get(0);
     }
-
     @Transactional
     public Integer addAutomaton(AutomatonEntity automaton) {
-        String query = "INSERT INTO " + repoName + " VALUES " + automaton.toQuery();
+        String query = "INSERT INTO " + repoName + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         Query nativeQuery = em.createNativeQuery(query, AutomatonEntity.class);
-        try {
-            return nativeQuery.executeUpdate();
-        } catch (Exception e) {
-            return null;
-        }
+        nativeQuery.setParameter(1, automaton.name);
+        nativeQuery.setParameter(2, automaton.device_id_sens);
+        nativeQuery.setParameter(3, automaton.sensor_id_sens);
+        nativeQuery.setParameter(4, automaton.val);
+        nativeQuery.setParameter(5, automaton.hysteresis);
+        nativeQuery.setParameter(6, automaton.device_id_acts);
+        nativeQuery.setParameter(7, automaton.sensor_id_acts);
+        nativeQuery.setParameter(8, automaton.state_up);
+        nativeQuery.setParameter(9, automaton.state_down);
+        return nativeQuery.executeUpdate();
     }
     @Transactional
     public Integer updateAutomaton(AutomatonEntity automaton) {
-        String query = String.format(
-                "UPDATE %s SET name = %s, device_id_sens = %s, sensor_id_sens = %s, val = %s, direction = %s" +
-                        "device_id_acts = %s, sensor_id_acts = %s, set_state = %s WHERE id = %s",
-                repoName, automaton.name, automaton.device_id_sens, automaton.sensor_id_sens, automaton.val, automaton.direction,
-                automaton.device_id_acts, automaton.sensor_id_acts, automaton.set_state, automaton.id);
+        String query = "UPDATE " + repoName +
+                " SET name = ?, device_id_sens = ?, sensor_id_sens = ?, val = ?, hysteresis = ?," +
+                "device_id_acts = ?, sensor_id_acts = ?, state_up = ?, state_down = ? WHERE name = ?";
+
         Query nativeQuery = em.createNativeQuery(query, AutomatonEntity.class);
+        nativeQuery.setParameter(1, automaton.name);
+        nativeQuery.setParameter(2, automaton.device_id_sens);
+        nativeQuery.setParameter(3, automaton.sensor_id_sens);
+        nativeQuery.setParameter(4, automaton.val);
+        nativeQuery.setParameter(5, automaton.hysteresis);
+        nativeQuery.setParameter(6, automaton.device_id_acts);
+        nativeQuery.setParameter(7, automaton.sensor_id_acts);
+        nativeQuery.setParameter(8, automaton.state_up);
+        nativeQuery.setParameter(9, automaton.state_down);
+        nativeQuery.setParameter(10, automaton.name);
         return nativeQuery.executeUpdate();
     }
-
     @Transactional
     public Integer deleteAutomaton(String name) {
-        String query = String.format("DELETE FROM %s WHERE name = %s", repoName, name);
+        String query = "DELETE FROM " + repoName + " WHERE name = ?";
         Query nativeQuery = em.createNativeQuery(query, AutomatonEntity.class);
+        nativeQuery.setParameter(1, name);
         return nativeQuery.executeUpdate();
     }
 }
