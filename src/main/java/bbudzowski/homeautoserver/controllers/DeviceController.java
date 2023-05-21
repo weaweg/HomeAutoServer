@@ -30,7 +30,7 @@ public class DeviceController {
         return new ResponseEntity<>(devices, HttpStatus.OK);
     }
 
-    @GetMapping({"/", "/local"})
+    @GetMapping({"", "/local"})
     public ResponseEntity<?> getDevice(@RequestParam String device_id, HttpServletRequest request) {
         DeviceEntity device = devRepo.getDevice(device_id);
         if (device == null) {

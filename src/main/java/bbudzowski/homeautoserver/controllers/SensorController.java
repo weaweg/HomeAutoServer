@@ -25,21 +25,21 @@ public class SensorController {
     public ResponseEntity<?> getAllSensors(HttpServletRequest request) {
         List<SensorEntity> sensors = sensRepo.getAllSensors();
         if (sensors.isEmpty()) {
-            HttpStatus status = HttpStatus.BAD_REQUEST;
+            HttpStatus status = HttpStatus.NOT_FOUND;
             return new ResponseEntity<>(new CustomResponse(status, request), status);
         }
         return new ResponseEntity<>(sensors, HttpStatus.OK);
     }
 
-    @GetMapping()
+    @GetMapping({"", "/local"})
     public ResponseEntity<?> getSensor(@RequestParam String device_id, @RequestParam String sensor_id,
                                        HttpServletRequest request) {
-        SensorEntity sensors = sensRepo.getSensor(device_id, sensor_id);
-        if (sensors == null) {
-            HttpStatus status = HttpStatus.BAD_REQUEST;
+        SensorEntity sensor = sensRepo.getSensor(device_id, sensor_id);
+        if (sensor == null) {
+            HttpStatus status = HttpStatus.NOT_FOUND;
             return new ResponseEntity<>(new CustomResponse(status, request), status);
         }
-        return new ResponseEntity<>(sensors, HttpStatus.OK);
+        return new ResponseEntity<>(sensor, HttpStatus.OK);
     }
 
     @PostMapping("/local/add")
@@ -53,16 +53,8 @@ public class SensorController {
     @PutMapping("/change_state")
     public ResponseEntity<?> changeSensorState(@RequestBody SensorEntity sens, HttpServletRequest request) {
         HttpStatus status = HttpStatus.OK;
-        SensorEntity dbSens = sensRepo.getSensor(sens.device_id, sens.sensor_id);
-        if(dbSens == null)
-            status = HttpStatus.NOT_FOUND;
-        else if (sens.current_state == null || dbSens.data_type == 0){
+        if (sensRepo.changeSensorState(sens) == 0) {
             status = HttpStatus.BAD_REQUEST;
-        }
-        else {
-            dbSens.copyParams(sens);
-            if (sensRepo.changeSensorState(dbSens) == 0)
-                status = HttpStatus.BAD_REQUEST;
         }
         return new ResponseEntity<>(new CustomResponse(status, request), status);
     }

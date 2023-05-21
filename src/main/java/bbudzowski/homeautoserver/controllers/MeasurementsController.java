@@ -8,9 +8,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.Date;
-import java.sql.Time;
-import java.sql.Timestamp;
 import java.util.List;
 
 @RestController
@@ -31,18 +28,18 @@ public class MeasurementsController {
             HttpServletRequest request) {
         List<MeasurementEntity> measurements = msRepo.getMeasurementsForSensor(device_id, sensor_id, start_time, end_time);
         if (measurements.isEmpty()) {
-            HttpStatus status = HttpStatus.BAD_REQUEST;
+            HttpStatus status = HttpStatus.NOT_FOUND;
             return new ResponseEntity<>(new CustomResponse(status, request), status);
         }
         return new ResponseEntity<>(measurements, HttpStatus.OK);
     }
 
-    @GetMapping("/last")
+    @GetMapping({"/last", "/local/last"})
     public ResponseEntity<?> getLastMeasurementForSensor(@RequestParam String device_id, @RequestParam String sensor_id,
                                                          HttpServletRequest request) {
         MeasurementEntity measurement = msRepo.getLastMeasurementForSensor(device_id, sensor_id);
         if (measurement == null) {
-            HttpStatus status = HttpStatus.BAD_REQUEST;
+            HttpStatus status = HttpStatus.NOT_FOUND;
             return new ResponseEntity<>(new CustomResponse(status, request), status);
         }
         return new ResponseEntity<>(measurement, HttpStatus.OK);
@@ -52,7 +49,7 @@ public class MeasurementsController {
     public ResponseEntity<?> addMeasurement(@RequestBody MeasurementEntity measurement, HttpServletRequest request) {
         HttpStatus status = HttpStatus.OK;
         if (msRepo.addMeasurement(measurement) == 0)
-            status = HttpStatus.BAD_REQUEST;
+            status = HttpStatus.NOT_FOUND;
         return new ResponseEntity<>(new CustomResponse(status, request), status);
     }
 
@@ -61,7 +58,7 @@ public class MeasurementsController {
                                                          HttpServletRequest request) {
         HttpStatus status = HttpStatus.OK;
         if (msRepo.deleteMeasurementsForSensor(device_id, sensor_id) == 0)
-            status = HttpStatus.BAD_REQUEST;
+            status = HttpStatus.NOT_FOUND;
         return new ResponseEntity<>(new CustomResponse(status, request), status);
     }
 

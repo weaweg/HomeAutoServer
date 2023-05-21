@@ -27,7 +27,7 @@ public class ScheduledTasks {
         this.msRepo = msRepo;
     }
 
-    @Scheduled(fixedDelay = 1000)
+    @Scheduled(fixedDelay = 100000)
     public void setAutomatons() {
         List<AutomatonEntity> automatons;
         automatons = autoRepo.getAllAutomatons();
@@ -50,14 +50,7 @@ public class ScheduledTasks {
                 continue;
 
             acts.current_state = set_state;
-            if(sensRepo.changeSensorState(acts) == 0)
-                return;
-
-            MeasurementEntity newState = new MeasurementEntity();
-            newState.device_id = automaton.device_id_acts;
-            newState.sensor_id = automaton.sensor_id_acts;
-            newState.val = (float) set_state;
-            msRepo.addMeasurement(newState);
+            sensRepo.changeSensorState(acts);
         }
     }
 }
