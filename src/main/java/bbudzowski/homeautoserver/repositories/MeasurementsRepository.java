@@ -7,7 +7,6 @@ import jakarta.persistence.Query;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.List;
 

@@ -1,9 +1,9 @@
 package bbudzowski.homeautoserver.tables;
 
-import jakarta.persistence.*;
-
-import java.util.List;
-import java.util.ArrayList;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 
 @Entity
 @Table(name = "devices", uniqueConstraints = {
