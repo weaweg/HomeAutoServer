@@ -27,7 +27,7 @@ public class ScheduledTasks {
         this.msRepo = msRepo;
     }
 
-    @Scheduled(fixedDelay = 100000)
+    @Scheduled(fixedDelay = 1000)
     public void setAutomatons() {
         List<AutomatonEntity> automatons;
         automatons = autoRepo.getAllAutomatons();
