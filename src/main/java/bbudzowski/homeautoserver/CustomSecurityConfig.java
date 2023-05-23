@@ -18,11 +18,8 @@ public class CustomSecurityConfig {
 
         http.cors().and().csrf().disable().authorizeHttpRequests()
                 .requestMatchers("*/local/**").access(localAccess)
-                .requestMatchers("/device/**").authenticated()
-                .requestMatchers("/sensor/**").authenticated()
-                .requestMatchers("/measurement/**").authenticated()
-                .requestMatchers("/automaton/**").authenticated()
-                .anyRequest().permitAll()
+                .requestMatchers("/**").authenticated()
+                .anyRequest().denyAll()
                 .and().httpBasic();
         return http.build();
     }
