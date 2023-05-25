@@ -26,7 +26,7 @@ public class AutomatonController {
         this.sensRepo = sensRepo;
     }
 
-    @GetMapping("/updateTime")
+    @GetMapping("/update_time")
     public ResponseEntity<?> getUpdateTime(HttpServletRequest request) {
         Timestamp updateTime = autoRepo.getUpdateTime();
         return BaseController.returnUpdateTime(updateTime, request);
@@ -54,12 +54,12 @@ public class AutomatonController {
 
     @PostMapping("/add")
     public ResponseEntity<?> addAutomaton(@RequestBody AutomatonEntity automaton, HttpServletRequest request) {
-        SensorEntity sens = sensRepo.getSensor(automaton.getDevice_id_sens(), automaton.getSensor_id_sens());
-        SensorEntity acts = sensRepo.getSensor(automaton.getDevice_id_acts(), automaton.getSensor_id_acts());
+        SensorEntity sens = sensRepo.getSensor(automaton.device_id_sens, automaton.sensor_id_sens);
+        SensorEntity acts = sensRepo.getSensor(automaton.device_id_acts, automaton.sensor_id_acts);
         HttpStatus status = HttpStatus.CREATED;
         if (sens == null || acts == null)
             status = HttpStatus.NOT_FOUND;
-        else if (!acts.isDiscrete())
+        else if (!acts.discrete)
             status = HttpStatus.UNPROCESSABLE_ENTITY;
         else if (autoRepo.addAutomaton(automaton) == 0)
             status = HttpStatus.BAD_REQUEST;
@@ -67,8 +67,8 @@ public class AutomatonController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<?> updateAutomaton(@RequWestBody AutomatonEntity automaton, HttpServletRequest request) {
-        AutomatonEntity dbAutomaton = autoRepo.getAutomaton(automaton.getName());
+    public ResponseEntity<?> updateAutomaton(@RequestBody AutomatonEntity automaton, HttpServletRequest request) {
+        AutomatonEntity dbAutomaton = autoRepo.getAutomaton(automaton.name);
         if(dbAutomaton == null)
             return new ResponseEntity<>(new CustomResponse(HttpStatus.NOT_FOUND, request), HttpStatus.NOT_FOUND);
         dbAutomaton.setParams(automaton);

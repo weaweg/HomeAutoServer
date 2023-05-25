@@ -55,20 +55,20 @@ public class AutomatonRepository {
                 "device_id_acts = ?, sensor_id_acts = ?, state_up = ?, state_down = ? WHERE name = ?";
         Query nativeQuery = em.createNativeQuery(query, AutomatonEntity.class);
         setFullQuery(automaton, nativeQuery);
-        nativeQuery.setParameter(10, automaton.getName());
+        nativeQuery.setParameter(10, automaton.name);
         return nativeQuery.executeUpdate();
     }
 
     private void setFullQuery(AutomatonEntity automaton, Query nativeQuery) {
-        nativeQuery.setParameter(1, automaton.getName());
-        nativeQuery.setParameter(2, automaton.getDevice_id_sens());
-        nativeQuery.setParameter(3, automaton.getSensor_id_sens());
-        nativeQuery.setParameter(4, automaton.getVal_top());
-        nativeQuery.setParameter(5, automaton.getVal_bot());
-        nativeQuery.setParameter(6, automaton.getDevice_id_acts());
-        nativeQuery.setParameter(7, automaton.getSensor_id_acts());
-        nativeQuery.setParameter(8, automaton.getState_up());
-        nativeQuery.setParameter(9, automaton.getState_down());
+        nativeQuery.setParameter(1, automaton.name);
+        nativeQuery.setParameter(2, automaton.device_id_sens);
+        nativeQuery.setParameter(3, automaton.sensor_id_sens);
+        nativeQuery.setParameter(4, automaton.val_top);
+        nativeQuery.setParameter(5, automaton.val_bot);
+        nativeQuery.setParameter(6, automaton.device_id_acts);
+        nativeQuery.setParameter(7, automaton.sensor_id_acts);
+        nativeQuery.setParameter(8, automaton.state_up);
+        nativeQuery.setParameter(9, automaton.state_down);
     }
 
     @Transactional

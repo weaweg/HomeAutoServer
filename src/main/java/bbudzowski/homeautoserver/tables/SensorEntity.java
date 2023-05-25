@@ -1,6 +1,8 @@
 package bbudzowski.homeautoserver.tables;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.Timestamp;
@@ -9,45 +11,29 @@ import java.sql.Timestamp;
 @Table(name = "sensors")
 public class SensorEntity {
     @Id
-    private String device_id;
+    public String device_id;
     @Id
-    private String sensor_id;
-    private String name;
-    private Boolean discrete;
-    private Float current_val;
-    private Timestamp m_time;
-    private String json_desc;
+    public String sensor_id;
+    public Boolean discrete;
+    public String name;
+    public Float current_val;
+    public Timestamp m_time;
+    public String json_desc;
+
+    public SensorEntity() {}
+
+    public SensorEntity(String device_id, String sensor_id, Float current_val) {
+        this.device_id = device_id;
+        this.sensor_id = sensor_id;
+        this.current_val = current_val;
+    }
 
     public void setParams(@NotNull SensorEntity sensor) {
         if(sensor.name != null) name = sensor.name;
-        json_desc = sensor.json_desc;
-    }
-
-    public String getDevice_id() {
-        return device_id;
-    }
-
-    public String getSensor_id() {
-        return sensor_id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public Boolean isDiscrete() {
-        return discrete;
-    }
-
-    public Float getCurrent_val() {
-        return current_val;
-    }
-
-    public Timestamp getM_time() {
-        return m_time;
-    }
-
-    public String getJson_desc() {
-        return json_desc;
+        if(sensor.current_val != null && sensor.discrete) {
+            current_val = sensor.current_val;
+            m_time = new Timestamp(System.currentTimeMillis());
+        }
+        if(sensor.json_desc != null) json_desc = sensor.json_desc;
     }
 }

@@ -1,6 +1,8 @@
 package bbudzowski.homeautoserver.controllers;
 
+import bbudzowski.homeautoserver.repositories.MeasurementsRepository;
 import bbudzowski.homeautoserver.repositories.SensorRepository;
+import bbudzowski.homeautoserver.tables.MeasurementEntity;
 import bbudzowski.homeautoserver.tables.SensorEntity;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,13 +18,15 @@ import java.util.List;
 public class SensorController {
 
     private final SensorRepository sensRepo;
+    private final MeasurementsRepository msRepo;
 
     @Autowired
-    public SensorController(SensorRepository sensRepo) {
+    public SensorController(SensorRepository sensRepo, MeasurementsRepository msRepo) {
         this.sensRepo = sensRepo;
+        this.msRepo = msRepo;
     }
 
-    @GetMapping("/updateTime")
+    @GetMapping("/update_time")
     public ResponseEntity<?> getUpdateTime(HttpServletRequest request) {
         Timestamp updateTime = sensRepo.getUpdateTime();
         return BaseController.returnUpdateTime(updateTime, request);
@@ -57,14 +61,18 @@ public class SensorController {
         return new ResponseEntity<>(new CustomResponse(status, request), status);
     }
 
-    @PutMapping("/update")W
+    @PutMapping("/update")
     public ResponseEntity<?> updateSensor(@RequestBody SensorEntity sensor, HttpServletRequest request) {
-        SensorEntity dbSensor = sensRepo.getSensor(sensor.getDevice_id(), sensor.getSensor_id());
+        SensorEntity dbSensor = sensRepo.getSensor(sensor.device_id, sensor.sensor_id);
         if(dbSensor == null)
             return new ResponseEntity<>(new CustomResponse(HttpStatus.NOT_FOUND, request), HttpStatus.NOT_FOUND);
         dbSensor.setParams(sensor);
-        if (sensRepo.updateSensor(dbSensor) == 0)
+        if(sensRepo.updateSensor(dbSensor) == 0)
             return new ResponseEntity<>(new CustomResponse(HttpStatus.BAD_REQUEST, request), HttpStatus.BAD_REQUEST);
+        else if(sensor.current_val != null && sensor.discrete)
+            if (msRepo.addMeasurement(new MeasurementEntity(
+                    sensor.device_id, sensor.sensor_id,sensor.current_val)) == 0)
+                return new ResponseEntity<>(new CustomResponse(HttpStatus.INTERNAL_SERVER_ERROR, request), HttpStatus.INTERNAL_SERVER_ERROR);
         return new ResponseEntity<>(dbSensor, HttpStatus.OK);
     }
 }

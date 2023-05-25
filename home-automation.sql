@@ -26,8 +26,8 @@ CREATE OR REPLACE TABLE sensors
 (
    device_id   CHAR(5)     NOT NULL,
    sensor_id   CHAR(3)     NOT NULL,
-   name        VARCHAR(30) NOT NULL,
-   discrete    BOOL        NOT NULL,
+   discrete    BOOLEAN     NOT NULL,
+   name        VARCHAR(30),
    current_val FLOAT,
    m_time      TIMESTAMP,
    json_desc   JSON,

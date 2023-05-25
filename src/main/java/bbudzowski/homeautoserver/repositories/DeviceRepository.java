@@ -47,9 +47,9 @@ public class DeviceRepository {
     public int addDevice(DeviceEntity device) {
         String query = "INSERT INTO " + repoName + " VALUES (?, ?, ?)";
         Query nativeQuery = em.createNativeQuery(query, DeviceEntity.class);
-        nativeQuery.setParameter(1, device.getDevice_id());
-        nativeQuery.setParameter(2, device.getName());
-        nativeQuery.setParameter(3, device.getLocation());
+        nativeQuery.setParameter(1, device.device_id);
+        nativeQuery.setParameter(2, device.name);
+        nativeQuery.setParameter(3, device.location);
         return nativeQuery.executeUpdate();
     }
 
@@ -57,8 +57,8 @@ public class DeviceRepository {
     public int updateDevice(DeviceEntity device) {
         String query = "UPDATE " + repoName + " SET location = ? WHERE device_id = ?";
         Query nativeQuery = em.createNativeQuery(query, DeviceEntity.class);
-        nativeQuery.setParameter(1, device.getLocation());
-        nativeQuery.setParameter(2, device.getDevice_id());
+        nativeQuery.setParameter(1, device.location);
+        nativeQuery.setParameter(2, device.device_id);
         return nativeQuery.executeUpdate();
     }
 

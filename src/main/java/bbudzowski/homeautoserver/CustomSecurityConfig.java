@@ -14,10 +14,11 @@ public class CustomSecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         WebExpressionAuthorizationManager localAccess = new WebExpressionAuthorizationManager(
-                "hasIpAddress('192.168.0.0/16') or hasIpAddress('::1')");
+                "hasIpAddress('192.168.100.0/24') or hasIpAddress('::1')");
 
-        http.cors().and().csrf().disable().authorizeHttpRequests()
-                .requestMatchers("*/local/**").access(localAccess)
+        http.csrf().disable().authorizeHttpRequests()
+                .requestMatchers("/error").permitAll()
+                .requestMatchers("/*/local/**").access(localAccess)
                 .requestMatchers("/**").authenticated()
                 .anyRequest().denyAll()
                 .and().httpBasic();

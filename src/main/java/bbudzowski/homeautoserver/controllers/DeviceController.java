@@ -21,7 +21,7 @@ public class DeviceController {
         this.devRepo = devRepo;
     }
 
-    @GetMapping("/updateTime")
+    @GetMapping("/update_time")
     public ResponseEntity<?> getUpdateTime(HttpServletRequest request) {
         Timestamp updateTime = devRepo.getUpdateTime();
         return BaseController.returnUpdateTime(updateTime, request);
@@ -57,7 +57,7 @@ public class DeviceController {
 
     @PutMapping("/update")
     public ResponseEntity<?> updateDevice(@RequestBody DeviceEntity device, HttpServletRequest request) {
-        DeviceEntity dbDevice = devRepo.getDevice(device.getDevice_id());
+        DeviceEntity dbDevice = devRepo.getDevice(device.device_id);
         if(dbDevice == null)
             return new ResponseEntity<>(new CustomResponse(HttpStatus.NOT_FOUND, request), HttpStatus.NOT_FOUND);
         dbDevice.setParams(device);

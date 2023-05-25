@@ -1,6 +1,9 @@
 package bbudzowski.homeautoserver.tables;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import org.jetbrains.annotations.NotNull;
 
 @Entity
@@ -8,25 +11,11 @@ import org.jetbrains.annotations.NotNull;
         @UniqueConstraint(columnNames = "name")})
 public class DeviceEntity {
     @Id
-    private String device_id;
-    private String name;
-    private String location;
-
-    public DeviceEntity() {}
+    public String device_id;
+    public String name;
+    public String location;
 
     public void setParams(@NotNull DeviceEntity device) {
         location = device.location;
-    }
-
-    public String getDevice_id() {
-        return device_id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getLocation() {
-        return location;
     }
 }

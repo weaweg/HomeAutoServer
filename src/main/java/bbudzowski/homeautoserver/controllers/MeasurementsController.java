@@ -1,14 +1,15 @@
 package bbudzowski.homeautoserver.controllers;
 
 import bbudzowski.homeautoserver.repositories.MeasurementsRepository;
+import bbudzowski.homeautoserver.repositories.SensorRepository;
 import bbudzowski.homeautoserver.tables.MeasurementEntity;
+import bbudzowski.homeautoserver.tables.SensorEntity;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.Timestamp;
 import java.util.List;
 
 @RestController
@@ -16,11 +17,13 @@ import java.util.List;
 public class MeasurementsController {
 
     private final MeasurementsRepository msRepo;
+    private final SensorRepository sensRepo;
 
     @Autowired
-    public MeasurementsController(MeasurementsRepository msRepo) {
+    public MeasurementsController(MeasurementsRepository msRepo, SensorRepository sensRepo) {
         this.msRepo = msRepo;
-    }W
+        this.sensRepo = sensRepo;
+    }
 
     @GetMapping("/all")
     public ResponseEntity<?> getMeasurementsForSensor(
@@ -35,22 +38,14 @@ public class MeasurementsController {
         return new ResponseEntity<>(measurements, HttpStatus.OK);
     }
 
-    @GetMapping({"/last", "/local/last"})
-    public ResponseEntity<?> getLastMeasurementForSensor(@RequestParam String device_id, @RequestParam String sensor_id,
-                                                         HttpServletRequest request) {
-        MeasurementEntity measurement = msRepo.getLastMeasurementForSensor(device_id, sensor_id);
-        if (measurement == null) {
-            HttpStatus status = HttpStatus.NOT_FOUND;
-            return new ResponseEntity<>(new CustomResponse(status, request), status);
-        }
-        return new ResponseEntity<>(measurement, HttpStatus.OK);
-    }
-
     @PostMapping("/local/add")
     public ResponseEntity<?> addMeasurement(@RequestBody MeasurementEntity measurement, HttpServletRequest request) {
         HttpStatus status = HttpStatus.OK;
-        if (msRepo.addMeasurement(measurement) == 0)
-            status = HttpStatus.NOT_FOUND;
+        if(msRepo.addMeasurement(measurement) == 0)
+            status = HttpStatus.BAD_REQUEST;
+        else if(sensRepo.setSensorValue(new SensorEntity(
+                measurement.device_id, measurement.sensor_id, measurement.val)) == 0)
+            status = HttpStatus.UNPROCESSABLE_ENTITY;
         return new ResponseEntity<>(new CustomResponse(status, request), status);
     }
 
@@ -59,8 +54,15 @@ public class MeasurementsController {
                                                          HttpServletRequest request) {
         HttpStatus status = HttpStatus.OK;
         if (msRepo.deleteMeasurementsForSensor(device_id, sensor_id) == 0)
-            status = HttpStatus.NOT_FOUND;
+            status = HttpStatus.BAD_REQUEST;
         return new ResponseEntity<>(new CustomResponse(status, request), status);
     }
 
+    @DeleteMapping("/delete_one")
+        public ResponseEntity<?> deleteMeasurement(@RequestParam Long id, HttpServletRequest request) {
+        HttpStatus status = HttpStatus.OK;
+        if(msRepo.deleteMeasurement(id) == 0)
+            status = HttpStatus.BAD_REQUEST;
+        return new ResponseEntity<>(new CustomResponse(status, request), status);
+        }
 }

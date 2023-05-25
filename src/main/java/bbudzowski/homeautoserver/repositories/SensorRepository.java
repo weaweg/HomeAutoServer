@@ -1,6 +1,6 @@
 package bbudzowski.homeautoserver.repositories;
 
-import bbudzowski.homeautoserver.tables.DeviceEntity;
+import bbudzowski.homeautoserver.tables.MeasurementEntity;
 import bbudzowski.homeautoserver.tables.SensorEntity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
@@ -49,13 +49,13 @@ public class SensorRepository {
     public Integer addSensor(SensorEntity sensor) {
         String query = "INSERT INTO " + repoName + " VALUES (?, ?, ?, ?, ?, ?, ?)";
         Query nativeQuery = em.createNativeQuery(query, SensorEntity.class);
-        nativeQuery.setParameter(1, sensor.getDevice_id());
-        nativeQuery.setParameter(2, sensor.getSensor_id());
-        nativeQuery.setParameter(3, sensor.getName());
-        nativeQuery.setParameter(4, sensor.isDiscrete());
+        nativeQuery.setParameter(1, sensor.device_id);
+        nativeQuery.setParameter(2, sensor.sensor_id);
+        nativeQuery.setParameter(3, sensor.discrete);
+        nativeQuery.setParameter(4, sensor.name);
         nativeQuery.setParameter(5, null);
         nativeQuery.setParameter(6, null);
-        nativeQuery.setParameter(7, sensor.getJson_desc());
+        nativeQuery.setParameter(7, sensor.json_desc);
         return nativeQuery.executeUpdate();
     }
 
@@ -63,10 +63,10 @@ public class SensorRepository {
     public Integer updateSensor(SensorEntity sensor) {
         String query = "UPDATE " + repoName + " SET name = ?, json_desc = ? WHERE device_id = ? AND sensor_id = ?";
         Query nativeQuery = em.createNativeQuery(query, SensorEntity.class);
-        nativeQuery.setParameter(1, sensor.getName());
-        nativeQuery.setParameter(2, sensor.getJson_desc());
-        nativeQuery.setParameter(3, sensor.getDevice_id());
-        nativeQuery.setParameter(3, sensor.getSensor_id());
+        nativeQuery.setParameter(1, sensor.name);
+        nativeQuery.setParameter(2, sensor.json_desc);
+        nativeQuery.setParameter(3, sensor.device_id);
+        nativeQuery.setParameter(3, sensor.sensor_id);
         return nativeQuery.executeUpdate();
     }
 
@@ -74,10 +74,10 @@ public class SensorRepository {
     public Integer setSensorValue(SensorEntity sensor) {
         String query = "UPDATE " + repoName + " SET current_val = ?, m_time = ? WHERE device_id = ? AND sensor_id = ?";
         Query nativeQuery = em.createNativeQuery(query, SensorEntity.class);
-        nativeQuery.setParameter(1, sensor.getCurrent_val());
-        nativeQuery.setParameter(2, sensor.getM_time());
-        nativeQuery.setParameter(3, sensor.getDevice_id());
-        nativeQuery.setParameter(3, sensor.getSensor_id());
+        nativeQuery.setParameter(1, sensor.current_val);
+        nativeQuery.setParameter(2, new Timestamp(System.currentTimeMillis()));
+        nativeQuery.setParameter(3, sensor.device_id);
+        nativeQuery.setParameter(4, sensor.sensor_id);
         return nativeQuery.executeUpdate();
     }
 

@@ -1,6 +1,7 @@
 package bbudzowski.homeautoserver.repositories;
 
 import bbudzowski.homeautoserver.tables.MeasurementEntity;
+import bbudzowski.homeautoserver.tables.SensorEntity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
@@ -31,9 +32,9 @@ public class MeasurementsRepository {
         String query = "INSERT INTO " + repoName + " VALUES (?, ?, ?, ?, ?)";
         Query nativeQuery = em.createNativeQuery(query, MeasurementEntity.class);
         nativeQuery.setParameter(1, null);
-        nativeQuery.setParameter(2, measurement.getDevice_id());
-        nativeQuery.setParameter(3, measurement.getSensor_id());
-        nativeQuery.setParameter(4, measurement.getVal());
+        nativeQuery.setParameter(2, measurement.device_id);
+        nativeQuery.setParameter(3, measurement.sensor_id);
+        nativeQuery.setParameter(4, measurement.val);
         nativeQuery.setParameter(5, new Timestamp(System.currentTimeMillis()));
         return nativeQuery.executeUpdate();
     }
