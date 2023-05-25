@@ -1,23 +1,53 @@
 package bbudzowski.homeautoserver.tables;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import org.jetbrains.annotations.NotNull;
+
+import java.sql.Timestamp;
 
 @Entity
 @Table(name = "sensors")
 public class SensorEntity {
     @Id
-    public String device_id;
+    private String device_id;
     @Id
-    public String sensor_id;
-    public Integer data_type;
-    public Integer current_state;
-    public String units;
+    private String sensor_id;
+    private String name;
+    private Boolean discrete;
+    private Float current_val;
+    private Timestamp m_time;
+    private String json_desc;
 
-    public void copyParams(SensorEntity sensor) {
-        if(sensor.data_type != null) data_type = sensor.data_type;
-        if(sensor.current_state != null) current_state = sensor.current_state;
-        if(sensor.units != null) units = sensor.units;
+    public void setParams(@NotNull SensorEntity sensor) {
+        if(sensor.name != null) name = sensor.name;
+        json_desc = sensor.json_desc;
+    }
+
+    public String getDevice_id() {
+        return device_id;
+    }
+
+    public String getSensor_id() {
+        return sensor_id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Boolean isDiscrete() {
+        return discrete;
+    }
+
+    public Float getCurrent_val() {
+        return current_val;
+    }
+
+    public Timestamp getM_time() {
+        return m_time;
+    }
+
+    public String getJson_desc() {
+        return json_desc;
     }
 }

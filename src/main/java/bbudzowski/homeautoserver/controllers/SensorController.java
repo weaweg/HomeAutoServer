@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 @RestController
@@ -19,6 +20,12 @@ public class SensorController {
     @Autowired
     public SensorController(SensorRepository sensRepo) {
         this.sensRepo = sensRepo;
+    }
+
+    @GetMapping("/updateTime")
+    public ResponseEntity<?> getUpdateTime(HttpServletRequest request) {
+        Timestamp updateTime = sensRepo.getUpdateTime();
+        return BaseController.returnUpdateTime(updateTime, request);
     }
 
     @GetMapping("/all")
@@ -50,21 +57,14 @@ public class SensorController {
         return new ResponseEntity<>(new CustomResponse(status, request), status);
     }
 
-    @PutMapping("/change_state")
-    public ResponseEntity<?> changeSensorState(@RequestBody SensorEntity sens, HttpServletRequest request) {
-        HttpStatus status = HttpStatus.OK;
-        if (sensRepo.changeSensorState(sens) == 0) {
-            status = HttpStatus.BAD_REQUEST;
-        }
-        return new ResponseEntity<>(new CustomResponse(status, request), status);
-    }
-
-    @DeleteMapping("/local/delete")
-    public ResponseEntity<?> removeSensor(@RequestParam String device_id, @RequestParam String sensor_id,
-                                          HttpServletRequest request) {
-        HttpStatus status = HttpStatus.OK;
-        if (sensRepo.removeSensor(device_id, sensor_id) == 0)
-            status = HttpStatus.BAD_REQUEST;
-        return new ResponseEntity<>(new CustomResponse(status, request), status);
+    @PutMapping("/update")W
+    public ResponseEntity<?> updateSensor(@RequestBody SensorEntity sensor, HttpServletRequest request) {
+        SensorEntity dbSensor = sensRepo.getSensor(sensor.getDevice_id(), sensor.getSensor_id());
+        if(dbSensor == null)
+            return new ResponseEntity<>(new CustomResponse(HttpStatus.NOT_FOUND, request), HttpStatus.NOT_FOUND);
+        dbSensor.setParams(sensor);
+        if (sensRepo.updateSensor(dbSensor) == 0)
+            return new ResponseEntity<>(new CustomResponse(HttpStatus.BAD_REQUEST, request), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(dbSensor, HttpStatus.OK);
     }
 }

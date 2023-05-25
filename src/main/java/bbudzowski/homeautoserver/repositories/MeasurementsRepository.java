@@ -17,7 +17,7 @@ public class MeasurementsRepository {
     private EntityManager em;
 
     public List<MeasurementEntity> getMeasurementsForSensor(String device_id, String sensor_id, String startDate, String endDate) {
-        String query = "SELECT * FROM " + repoName + " WHERE device_id = ? AND sensor_id = ? AND m_time BETWEEN ? AND ?";
+        String query = "SELECT * FROM " + repoName + " WHERE device_id = ? AND sensor_id = ? AND m_time BETWEEN ? AND ? LIMIT 10000";
         Query nativeQuery = em.createNativeQuery(query, MeasurementEntity.class);
         nativeQuery.setParameter(1, device_id);
         nativeQuery.setParameter(2, sensor_id);
@@ -26,24 +26,15 @@ public class MeasurementsRepository {
         return nativeQuery.getResultList();
     }
 
-    public MeasurementEntity getLastMeasurementForSensor(String device_id, String sensor_id) {
-        String query = "SELECT * FROM " + repoName + " WHERE device_id = ? AND sensor_id = ? ORDER BY m_time DESC LIMIT 1";
-        Query nativeQuery = em.createNativeQuery(query, MeasurementEntity.class);
-        nativeQuery.setParameter(1, device_id);
-        nativeQuery.setParameter(2, sensor_id);
-        List<MeasurementEntity> tmp = nativeQuery.getResultList();
-        return tmp.isEmpty() ? null : tmp.get(0);
-    }
-
     @Transactional
     public Integer addMeasurement(MeasurementEntity measurement) {
         String query = "INSERT INTO " + repoName + " VALUES (?, ?, ?, ?, ?)";
         Query nativeQuery = em.createNativeQuery(query, MeasurementEntity.class);
         nativeQuery.setParameter(1, null);
-        nativeQuery.setParameter(2, measurement.device_id);
-        nativeQuery.setParameter(3, measurement.sensor_id);
-        nativeQuery.setParameter(4, new Timestamp(System.currentTimeMillis()));
-        nativeQuery.setParameter(5, measurement.val);
+        nativeQuery.setParameter(2, measurement.getDevice_id());
+        nativeQuery.setParameter(3, measurement.getSensor_id());
+        nativeQuery.setParameter(4, measurement.getVal());
+        nativeQuery.setParameter(5, new Timestamp(System.currentTimeMillis()));
         return nativeQuery.executeUpdate();
     }
 
@@ -57,10 +48,24 @@ public class MeasurementsRepository {
     }
 
     @Transactional
-    public Integer deleteLastMeasurementForSensor(Long id) {
+    public Integer deleteMeasurement(long id) {
         String query = "DELETE FROM " + repoName + " WHERE id = ?";
         Query nativeQuery = em.createNativeQuery(query, MeasurementEntity.class);
         nativeQuery.setParameter(1, id);
+        return nativeQuery.executeUpdate();
+    }
+
+    @Transactional
+    public Integer deleteInvalidMeasurementsForSensor(String device_id, String sensor_id, float value, boolean greater) {
+        String query = "DELETE FROM " + repoName + " WHERE device_id = ? AND sensor_id = ? ";
+        if(greater)
+            query += "AND val > ?";
+        else
+            query += "AND val < ?";
+        Query nativeQuery = em.createNativeQuery(query, MeasurementEntity.class);
+        nativeQuery.setParameter(1, device_id);
+        nativeQuery.setParameter(1, sensor_id);
+        nativeQuery.setParameter(1, value);
         return nativeQuery.executeUpdate();
     }
 }

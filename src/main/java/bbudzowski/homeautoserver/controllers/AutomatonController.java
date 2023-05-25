@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 @RestController
@@ -23,6 +24,12 @@ public class AutomatonController {
     public AutomatonController(AutomatonRepository autoRepo, SensorRepository sensRepo) {
         this.autoRepo = autoRepo;
         this.sensRepo = sensRepo;
+    }
+
+    @GetMapping("/updateTime")
+    public ResponseEntity<?> getUpdateTime(HttpServletRequest request) {
+        Timestamp updateTime = autoRepo.getUpdateTime();
+        return BaseController.returnUpdateTime(updateTime, request);
     }
 
     @GetMapping("/all")
@@ -47,12 +54,12 @@ public class AutomatonController {
 
     @PostMapping("/add")
     public ResponseEntity<?> addAutomaton(@RequestBody AutomatonEntity automaton, HttpServletRequest request) {
-        SensorEntity sens = sensRepo.getSensor(automaton.device_id_sens, automaton.sensor_id_sens);
-        SensorEntity acts = sensRepo.getSensor(automaton.device_id_acts, automaton.sensor_id_acts);
+        SensorEntity sens = sensRepo.getSensor(automaton.getDevice_id_sens(), automaton.getSensor_id_sens());
+        SensorEntity acts = sensRepo.getSensor(automaton.getDevice_id_acts(), automaton.getSensor_id_acts());
         HttpStatus status = HttpStatus.CREATED;
         if (sens == null || acts == null)
             status = HttpStatus.NOT_FOUND;
-        else if (sens.data_type >= 1 || acts.data_type <= 0)
+        else if (!acts.isDiscrete())
             status = HttpStatus.UNPROCESSABLE_ENTITY;
         else if (autoRepo.addAutomaton(automaton) == 0)
             status = HttpStatus.BAD_REQUEST;
@@ -60,17 +67,14 @@ public class AutomatonController {
     }
 
     @PutMapping("/update")
-    public ResponseEntity<?> updateAutomaton(@RequestBody AutomatonEntity automaton, HttpServletRequest request) {
-        AutomatonEntity dbAutomaton = autoRepo.getAutomaton(automaton.name);
-        HttpStatus status = HttpStatus.OK;
+    public ResponseEntity<?> updateAutomaton(@RequWestBody AutomatonEntity automaton, HttpServletRequest request) {
+        AutomatonEntity dbAutomaton = autoRepo.getAutomaton(automaton.getName());
         if(dbAutomaton == null)
-            status = HttpStatus.NOT_FOUND;
-        else {
-            dbAutomaton.copyParams(automaton);
-            if (autoRepo.updateAutomaton(dbAutomaton) == 0)
-                status = HttpStatus.BAD_REQUEST;
-        }
-        return new ResponseEntity<>(new CustomResponse(status, request), status);
+            return new ResponseEntity<>(new CustomResponse(HttpStatus.NOT_FOUND, request), HttpStatus.NOT_FOUND);
+        dbAutomaton.setParams(automaton);
+        if (autoRepo.updateAutomaton(dbAutomaton) == 0)
+            return new ResponseEntity<>(new CustomResponse(HttpStatus.BAD_REQUEST, request), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(dbAutomaton, HttpStatus.OK);
     }
 
     @DeleteMapping("/delete")

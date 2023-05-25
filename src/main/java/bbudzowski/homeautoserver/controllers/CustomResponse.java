@@ -17,4 +17,11 @@ public class CustomResponse {
         desc = status.getReasonPhrase();
         this.path = request.getContextPath() + request.getServletPath();
     }
+
+    public CustomResponse(HttpStatus status, HttpServletRequest request, String desc) {
+        timestamp = LocalDateTime.now();
+        this.status = status.value();
+        this.desc = desc;
+        this.path = request.getContextPath() + request.getServletPath();
+    }
 }

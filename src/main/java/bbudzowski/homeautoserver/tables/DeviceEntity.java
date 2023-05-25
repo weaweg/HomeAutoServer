@@ -1,21 +1,32 @@
 package bbudzowski.homeautoserver.tables;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
+import jakarta.persistence.*;
+import org.jetbrains.annotations.NotNull;
 
 @Entity
 @Table(name = "devices", uniqueConstraints = {
         @UniqueConstraint(columnNames = "name")})
 public class DeviceEntity {
     @Id
-    public String device_id;
-    public String name;
-    public String location;
+    private String device_id;
+    private String name;
+    private String location;
 
-    public void copyParams(DeviceEntity device) {
-        if(device.name != null) name = device.name;
-        if(device.location != null) location = device.location;
+    public DeviceEntity() {}
+
+    public void setParams(@NotNull DeviceEntity device) {
+        location = device.location;
+    }
+
+    public String getDevice_id() {
+        return device_id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getLocation() {
+        return location;
     }
 }

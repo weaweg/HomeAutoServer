@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 @RestController
@@ -18,6 +19,12 @@ public class DeviceController {
     @Autowired
     public DeviceController(DeviceRepository devRepo) {
         this.devRepo = devRepo;
+    }
+
+    @GetMapping("/updateTime")
+    public ResponseEntity<?> getUpdateTime(HttpServletRequest request) {
+        Timestamp updateTime = devRepo.getUpdateTime();
+        return BaseController.returnUpdateTime(updateTime, request);
     }
 
     @GetMapping("/all")
@@ -42,7 +49,6 @@ public class DeviceController {
 
     @PostMapping("/local/add")
     public ResponseEntity<?> addDevice(@RequestBody DeviceEntity device, HttpServletRequest request) {
-        device.name = device.device_id;
         HttpStatus status = HttpStatus.CREATED;
         if (devRepo.addDevice(device) == 0)
             status = HttpStatus.BAD_REQUEST;
@@ -51,20 +57,17 @@ public class DeviceController {
 
     @PutMapping("/update")
     public ResponseEntity<?> updateDevice(@RequestBody DeviceEntity device, HttpServletRequest request) {
-        DeviceEntity dbDevice = devRepo.getDevice(device.device_id);
-        HttpStatus status = HttpStatus.OK;
+        DeviceEntity dbDevice = devRepo.getDevice(device.getDevice_id());
         if(dbDevice == null)
-            status = HttpStatus.NOT_FOUND;
-        else {
-            dbDevice.copyParams(device);
-            if (devRepo.updateDevice(dbDevice) == 0)
-                status = HttpStatus.BAD_REQUEST;
-        }
-        return new ResponseEntity<>(new CustomResponse(status, request), status);
+            return new ResponseEntity<>(new CustomResponse(HttpStatus.NOT_FOUND, request), HttpStatus.NOT_FOUND);
+        dbDevice.setParams(device);
+        if (devRepo.updateDevice(dbDevice) == 0)
+            return new ResponseEntity<>(new CustomResponse(HttpStatus.BAD_REQUEST, request), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(dbDevice, HttpStatus.OK);
     }
 
-    @DeleteMapping("/local/delete")
-    public ResponseEntity<?> removeDevice(@RequestParam String device_id, HttpServletRequest request) {
+    @DeleteMapping("/delete")
+    public ResponseEntity<?> deleteDevice(@RequestParam String device_id, HttpServletRequest request) {
         HttpStatus status = HttpStatus.OK;
         if (devRepo.deleteDevice(device_id) == 0)
             status = HttpStatus.BAD_REQUEST;
