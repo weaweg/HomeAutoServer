@@ -19,11 +19,10 @@ public class BaseController {
 
     public static ResponseEntity<?> returnUpdateTime(Timestamp updateTime, HttpServletRequest request) {
         HttpStatus status = HttpStatus.OK;
-        if (updateTime == null) {
-            status = HttpStatus.NOT_FOUND;
-            return new ResponseEntity<>(new CustomResponse(status, request), status);
-        }
+        String time = null;
+        if (updateTime != null)
+            time = updateTime.toString();
         return new ResponseEntity<>(new CustomResponse(
-                status, request, updateTime.toString()), status);
+                status, request, time), status);
     }
 }
