@@ -9,6 +9,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.List;
 
 @Repository
@@ -35,7 +36,7 @@ public class MeasurementsRepository {
         nativeQuery.setParameter(2, measurement.device_id);
         nativeQuery.setParameter(3, measurement.sensor_id);
         nativeQuery.setParameter(4, measurement.val);
-        nativeQuery.setParameter(5, new Timestamp(System.currentTimeMillis()));
+        nativeQuery.setParameter(5, new Timestamp(Instant.now().toEpochMilli()));
         return nativeQuery.executeUpdate();
     }
 

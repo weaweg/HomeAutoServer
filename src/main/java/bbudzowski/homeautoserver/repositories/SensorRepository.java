@@ -10,6 +10,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.List;
 
 @Repository
@@ -75,7 +76,7 @@ public class SensorRepository {
         String query = "UPDATE " + repoName + " SET current_val = ?, m_time = ? WHERE device_id = ? AND sensor_id = ?";
         Query nativeQuery = em.createNativeQuery(query, SensorEntity.class);
         nativeQuery.setParameter(1, sensor.current_val);
-        nativeQuery.setParameter(2, new Timestamp(System.currentTimeMillis()));
+        nativeQuery.setParameter(2, new Timestamp(Instant.now().toEpochMilli()));
         nativeQuery.setParameter(3, sensor.device_id);
         nativeQuery.setParameter(4, sensor.sensor_id);
         return nativeQuery.executeUpdate();
