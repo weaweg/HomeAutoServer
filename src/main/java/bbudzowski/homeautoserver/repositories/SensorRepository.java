@@ -53,7 +53,7 @@ public class SensorRepository {
         nativeQuery.setParameter(1, sensor.device_id);
         nativeQuery.setParameter(2, sensor.sensor_id);
         nativeQuery.setParameter(3, sensor.discrete);
-        nativeQuery.setParameter(7, sensor.json_desc);
+        nativeQuery.setParameter(4, sensor.json_desc);
         return nativeQuery.executeUpdate();
     }
 
@@ -64,7 +64,7 @@ public class SensorRepository {
         nativeQuery.setParameter(1, sensor.name);
         nativeQuery.setParameter(2, sensor.json_desc);
         nativeQuery.setParameter(3, sensor.device_id);
-        nativeQuery.setParameter(3, sensor.sensor_id);
+        nativeQuery.setParameter(4, sensor.sensor_id);
         return nativeQuery.executeUpdate();
     }
 

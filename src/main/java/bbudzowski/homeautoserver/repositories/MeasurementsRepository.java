@@ -1,7 +1,6 @@
 package bbudzowski.homeautoserver.repositories;
 
 import bbudzowski.homeautoserver.tables.MeasurementEntity;
-import bbudzowski.homeautoserver.tables.SensorEntity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
@@ -66,8 +65,8 @@ public class MeasurementsRepository {
             query += "AND val < ?";
         Query nativeQuery = em.createNativeQuery(query, MeasurementEntity.class);
         nativeQuery.setParameter(1, device_id);
-        nativeQuery.setParameter(1, sensor_id);
-        nativeQuery.setParameter(1, value);
+        nativeQuery.setParameter(2, sensor_id);
+        nativeQuery.setParameter(3, value);
         return nativeQuery.executeUpdate();
     }
 }
