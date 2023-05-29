@@ -45,11 +45,10 @@ public class DeviceRepository {
 
     @Transactional
     public int addDevice(DeviceEntity device) {
-        String query = "INSERT INTO " + repoName + " VALUES (?, ?, ?)";
+        String query = "INSERT INTO " + repoName + " (device_id, name) VALUES (?, ?)";
         Query nativeQuery = em.createNativeQuery(query, DeviceEntity.class);
         nativeQuery.setParameter(1, device.device_id);
         nativeQuery.setParameter(2, device.name);
-        nativeQuery.setParameter(3, device.location);
         return nativeQuery.executeUpdate();
     }
 

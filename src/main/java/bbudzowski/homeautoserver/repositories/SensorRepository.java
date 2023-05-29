@@ -1,6 +1,5 @@
 package bbudzowski.homeautoserver.repositories;
 
-import bbudzowski.homeautoserver.tables.MeasurementEntity;
 import bbudzowski.homeautoserver.tables.SensorEntity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
@@ -48,14 +47,12 @@ public class SensorRepository {
 
     @Transactional
     public Integer addSensor(SensorEntity sensor) {
-        String query = "INSERT INTO " + repoName + " VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO " + repoName + " (device_id, sensor_id, discrete, json_desc) " +
+                "VALUES (?, ?, ?, ?)";
         Query nativeQuery = em.createNativeQuery(query, SensorEntity.class);
         nativeQuery.setParameter(1, sensor.device_id);
         nativeQuery.setParameter(2, sensor.sensor_id);
         nativeQuery.setParameter(3, sensor.discrete);
-        nativeQuery.setParameter(4, sensor.name);
-        nativeQuery.setParameter(5, null);
-        nativeQuery.setParameter(6, null);
         nativeQuery.setParameter(7, sensor.json_desc);
         return nativeQuery.executeUpdate();
     }

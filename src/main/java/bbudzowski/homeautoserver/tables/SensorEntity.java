@@ -14,8 +14,8 @@ public class SensorEntity {
     public String device_id;
     @Id
     public String sensor_id;
-    public Boolean discrete;
     public String name;
+    public Boolean discrete;
     public Float current_val;
     public Timestamp m_time;
     public String json_desc;
